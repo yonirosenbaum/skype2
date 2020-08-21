@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./dashboard.css"/>
+</head>
+<body>
+    <div class="login">
+        <div class="login__header">
+            <h6>Login With Skype Clone</h6>
+            <!--ICON HERE-->
+        </div>
+        <form onsubmit="handleSubmit()" class="login__form" action="/userlogin" method="POST">
+            <label for="usernameInput"></label>
+            <input type="text" name="username" id="usernameInput"/>
+            <label minlength="6" maxlength="20" for="passwordInput"></label>
+            <input minlength="6" maxlength="20" type="password" id="passwordInput" name="password"/>
+            <input class="login__submitButton" type="submit">Sign In</input>
+        </form>
+        <!--Button will route to another identical 'Signup' page which creates an account and signs them in after-->
+        <a class="login__signUpButton" href="signup.html">Sign up for an account</a>
+    </div>
+    <script>
+    </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+    <link href="/dashboard.css" rel="stylesheet"/>
+    <script
+    src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"
+    data-auto-a11y="true"
+  ></script>
+  <script>
+    const SEARCH_RESULTS = "<%= searchResults %>"
+  </script>
+    <script src="/script"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard__header">
+            <h4>Your Chats</h4>
+            <div style="position: relative; display: flex; flex-direction: column;">
+            <form class="dashboard__searchForm" action="/search" method="POST">
+              <input name="searchInput" class="dashboard__searchInput" type="text" placeholder="Search for a user"/>
+              <div class="dashboard__searchIcon__wrapper">
+                 <a><i class="dashboard__searchIcon fa fa-search"></i></a>
+              </div>
+           </form>
+           <div style="display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
+           </div>
+        </div>
+           <a class="dashboard__logout">Log Out</a>
+        </div>
+        <div class="dashboard__chats">
+        </div>
+    </div>
+    <script>
+      //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
+      const xhr = new XMLHttpRequest();
+      xhr.open("get", "/getCurrentUser", true);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+     xhr.send();
+     xhr.onreadystatechange = function() {
+       document.body.setAttribute('id', `${xhr.response}`)
+     }
+      console.log(SEARCH_RESULTS);
+      //returns myuser,myuser,myuser,myuser
+      const splitResults = SEARCH_RESULTS.split(',')
+      console.log('split search results', splitResults);
+      console.log(typeof splitResults);
+
+      const renderSearchResult = (results) => {
+        document.querySelector('.dashboard__searchResults').innerHTML = '<div></div>'
+          const renderResultsAsHtml = results.map(result=>{
+            if(results){
+          let newResult = ` 
+          <div class="dashboard__searchResult" style="justify-content: space-between; min-width: 100px; display: flex; border: 1px solid lightgrey; color: lightgrey; background: black;">
+            <p>${result}</p>
+            <a class="dashboard__search__add" style="padding-bottom: 5px; align-items: center; background: green; min-width: 30px; display: flex; flex-direction: column-reverse;">add<i class="fas fa-user" style="padding-bottom: 2px;"></i></a>
+          </div>
+        `
+        document.querySelector('.dashboard__searchResults').innerHTML += newResult
+           }})
+          console.log(renderResultsAsHtml)
+      }
+      //renderSearchResult(splitResults)
+
+/* searchbar onchange send message to dynamically display search information and stop page reloading- use AJAX update search click so that when they click it
+  all data is displayed in the app ina search content page
+*/
+document.querySelector('.dashboard__searchInput').addEventListener('keyup', function(e){
+var xhttp = new XMLHttpRequest();
+xhttp.open("POST", "/searchUpdate", true);
+xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhttp.send(`searchInput=${e.currentTarget.value}`);
+console.log('request sent')
+xhttp.onreadystatechange = function() {
+  console.log('xhr ready state change')
+    if (xhttp.readyState === 4 && xhttp.response.length) {
+      console.log('response', xhttp.response);
+      const responseAsArray = xhttp.response.split(',');
+      console.log('response', typeof responseAsArray);
+      if(!xhttp.response.message){
+      renderSearchResult(responseAsArray)
+      }
+      else if(xhttp.response.message){
+        console.log(xhttp.response.message)
+      }
+      if(document.querySelector('.dashboard__searchInput').value.length > 0){
+        document.querySelector('.dashboard__searchResults').style.display = 'block'
+      }
+     if(document.querySelector('.dashboard__searchInput').value.length == 0){
+       document.querySelector('.dashboard__searchResults').style.display = 'none'
+      }
+    }
+}
+})
+      //document.querySelector('.dashboard__searchResults').innerHTML = renderSearchResult();
+      
+      //document.querySelector('.dashboard__searchResults').innerHTML = renderSearchResult()
+
+      document.querySelector('.dashboard__searchIcon__wrapper').addEventListener('click', function(){
+          console.log('clicked')
+          document.querySelector('.dashboard__searchForm').submit()
+          //POST REQUEST WITH THE SEARCH RESULTS AND HAVE A REDIRECTED PAGE IN THE ROUTER WHICH
+          // GETS THE RESULTS and calls res.render with the results here.
+
+          //const searchBarJSON = ("search" : {"search" : "pop" })
+          /*fetch('/search', {
+              method: 'POST',
+              headers: {
+      'Content-Type': 'application/json'
+    },
+              body: {"search" : "pop"}
+          })
+          .then(res => {
+              console.log('dashboard res', res)
+              )
+          .then(data=>{console.log(data)})*/
+      })
+    </script>
+</body>
+</html>

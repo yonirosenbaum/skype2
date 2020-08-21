@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+    <link href="/dashboard.css" rel="stylesheet"/>
+    <script
+    src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"
+    data-auto-a11y="true"
+  ></script>
+  <script>
+    const SEARCH_RESULTS = "<%= searchResults %>"
+  </script>
+    <script src="/script"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard__header">
+            <h4>Your Chats</h4>
+            <div style="visibility: hidden; position: relative; display: flex; flex-direction: column;">
+            <form class="dashboard__searchForm" action="/search" method="POST">
+              <input name="searchInput" class="dashboard__searchInput" type="text" placeholder="Search for a user"/>
+              <div class="dashboard__searchIcon__wrapper">
+                 <a><i class="dashboard__searchIcon fa fa-search"></i></a>
+              </div>
+           </form>
+           <div style="display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
+           </div>
+        </div>
+           <a class="dashboard__logout">Log Out</a>
+        </div>
+        <div class="search__resultsList">
+        </div>
+        <div class="search__backButton" style="background: #d22d46; align-items: center; padding-left: 20px; height: 40px; font-weight: 600; min-width: 100px; display: flex; border: 1px solid lightgrey; color: lightgrey;">
+          <i style="padding-right: 10px;" class="fas fa-undo-alt"></i>
+          Return to dashboard
+        </div>
+    </div>
+    <script>
+       //render search results from dashboard searchbar
+       const splitResults = SEARCH_RESULTS.split(',');
+        console.log(splitResults)
+        const renderSearchResult = (results) => {
+          const renderResultsAsHtml = results.map(result=>{
+            if(results){
+          let newResult = ` 
+          <div class="dashboard__searchResult" style="padding-left: 20px; font-weight: 600; justify-content: space-between; min-width: 100px; display: flex; border: 1px solid lightgrey; color: lightgrey; background: black;">
+            <p class="search__result ">${result}</p>
+            <a class="dashboard__search__add" style="padding-bottom: 5px; align-items: center; background: green; min-width: 30px; display: flex; flex-direction: column-reverse;">add<i class="fas fa-user" style="padding-bottom: 2px;"></i></a>
+          </div>
+        `
+        document.querySelector('.search__resultsList').innerHTML += newResult
+           }})
+      }
+      renderSearchResult(splitResults)
+                //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
+const xhr = new XMLHttpRequest();
+      xhr.open("get", "/getCurrentUser", true);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+     xhr.send();
+     xhr.onreadystatechange = function() {
+     if(xhr.readyState === 4){
+       console.log('getcurrentuser', xhr.response)
+       document.body.setAttribute('id', `${xhr.response}`)
+       document.body.id = `${xhr.response}`
+       console.log('xhr response', xhr.response)
+       let bodyId = xhr.response
+       //checkUserFriendshipStatus(bodyId)
+       /*const xhrTwo = new XMLHttpRequest();
+      xhrTwo.open("post", "/checkuserstatus", true);
+      xhrTwo.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhrTwo.send(`id=${bodyId}&searchResults=${splitResults}`);     */
+     }
+    }
+           //See if users have been added, are pending or havent been added.
+          
+     /*function checkUserFriendshipStatus(bodyId){
+          console.log('bodyId', bodyId)
+      const xhrTwo = new XMLHttpRequest();
+      xhrTwo.open("post", "/checkuserstatus", true);
+      xhrTwo.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhrTwo.send(`id=${bodyId}&searchResults=${splitResults}`);
+      xhrTwo.onreadystatechange = function(){
+          console.log('xhr2 ready state change')     
+    }
+}*/
+
+      //send friend request
+      //setTimeout(console.log('pre', document.body.id), 500)
+      document.querySelector('.dashboard__searchResult').addEventListener('click', function handleUserAdd(e){
+        const current = e.currentTarget
+        console.log('text',document.querySelector('.search__result').textContent)
+        console.log('body.id', document.body.id)
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/addfriend", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(`username=${document.querySelector('.search__result').textContent}&id=${document.body.id}`);
+        xhttp.onreadystatechange = function() {
+        console.log('xhr ready state change')
+        //based on what is returned
+    if (xhttp.readyState === 4 && xhttp.response == 'user_added') {
+        current.children[1].classList += ' search__result_pending'
+        current.children[1].textContent = ''
+        const icon = document.createElement('i')
+        current.children[1].appendChild(icon);
+        icon.classList += 'fas fa-address-book'
+        current.removeEventListener('click', handleUserAdd)
+    }
+}
+})
+    </script>
+</body>
+</html>
