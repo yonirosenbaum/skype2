@@ -6,19 +6,22 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard</title>
     <link href="/dashboard.css" rel="stylesheet"/>
+    <link href="/dashboardtwo.css" rel="stylesheet"/>
     <script
     src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"
     data-auto-a11y="true"
+    data-search-pseudo-elements
   ></script>
   <script>
     const SEARCH_RESULTS = "<%= searchResults %>"
   </script>
     <script src="/script"></script>
 </head>
-<body>
+<body style="min-height: 100%;">
     <div class="dashboard">
         <div class="dashboard__header">
-            <h4>Your Chats</h4>
+            <a style="color: white; text-decoration: none;" href="/dashboard"><h4>Your Chats</h4></a>
+            <a href="/requests" style="text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
             <div style="position: relative; display: flex; flex-direction: column;">
             <form class="dashboard__searchForm" action="/search" method="POST">
               <input name="searchInput" class="dashboard__searchInput" type="text" placeholder="Search for a user"/>
@@ -31,23 +34,66 @@
         </div>
            <a class="dashboard__logout">Log Out</a>
         </div>
-        <div class="dashboard__chats">
+        <div style="mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(173, 160, 154, 0.1))">
+        <div style="padding-top: 10px; background: black" class="dashboard__chats">
+        </div>
         </div>
     </div>
     <script>
+      let splitResults = SEARCH_RESULTS.split(',')
       //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
       const xhr = new XMLHttpRequest();
+      const newIconForAdded = document.createElement('i')
+      function handleSearchClickIfUserNotAdded(){
+console.log('script deferred')
+const selectAllSearches = document.querySelectorAll('.addClickEvent')
+const selectAllSearchesArray = [...selectAllSearches]
+console.log('selectAllSearchesArray', selectAllSearchesArray)
+for(let i=0; i<selectAllSearchesArray.length; i++){
+selectAllSearchesArray[i].addEventListener('click', e => handleUserAdd(e))
+}
+function handleUserAdd(e){
+console.log('addededede')
+if(!e.currentTarget.classList.contains('status4') && !e.currentTarget.classList.contains('status2')){
+      console.log('username from click event', e.currentTarget.parentElement.textContent )
+    
+      //get parent element text without add and set that to username
+      // first figure out why styling duplicates icon
+          var xhttp = new XMLHttpRequest();
+  xhttp.open("POST", "/addfriend", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhttp.send(`username=${e.currentTarget.parentElement.children[0].textContent}&id=${document.body.id}`);
+  console.log('xhr ready state change')
+  //based on what is returned
+  console.log('user added client side and response', xhr.response)
+  console.log('ect', e.currentTarget)
+  e.currentTarget.classList += ' search__result_pending'
+  e.currentTarget.textContent = ''
+  e.currentTarget.appendChild(newIconForAdded);
+  newIconForAdded.classList = 'fas fa-address-book';
+    }}
+  }
+
       xhr.open("get", "/getCurrentUser", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
      xhr.send();
      xhr.onreadystatechange = function() {
        document.body.setAttribute('id', `${xhr.response}`)
+       if(xhr.readyState === 4){
+       console.log('getcurrentuser', xhr.response)
+       document.body.setAttribute('id', `${xhr.response}`)
+       document.body.id = `${xhr.response}`
+       console.log('xhr response', xhr.response)
+       let bodyId = xhr.response
+       //checkUserFriendshipStatus(bodyId)
+     
      }
+    }
       console.log(SEARCH_RESULTS);
       //returns myuser,myuser,myuser,myuser
-      const splitResults = SEARCH_RESULTS.split(',')
       console.log('split search results', splitResults);
       console.log(typeof splitResults);
+
 
       const renderSearchResult = (results) => {
         document.querySelector('.dashboard__searchResults').innerHTML = '<div></div>'
@@ -55,8 +101,8 @@
             if(results){
           let newResult = ` 
           <div class="dashboard__searchResult" style="justify-content: space-between; min-width: 100px; display: flex; border: 1px solid lightgrey; color: lightgrey; background: black;">
-            <p>${result}</p>
-            <a class="dashboard__search__add" style="padding-bottom: 5px; align-items: center; background: green; min-width: 30px; display: flex; flex-direction: column-reverse;">add<i class="fas fa-user" style="padding-bottom: 2px;"></i></a>
+            <p class="search__result">${result}</p>
+            <a id="${result}-text" class="addClickEvent dashboard__search__add ${result}" style="padding-bottom: 5px; align-items: center; background: green; min-width: 30px; display: flex; flex-direction: column-reverse;">add<i id="${result}-icon" class="fas fa-user" style="font-size: 12px; height: 20px; width: 20px; padding-bottom: 2px;"></i></a>
           </div>
         `
         document.querySelector('.dashboard__searchResults').innerHTML += newResult
@@ -79,6 +125,7 @@ xhttp.onreadystatechange = function() {
     if (xhttp.readyState === 4 && xhttp.response.length) {
       console.log('response', xhttp.response);
       const responseAsArray = xhttp.response.split(',');
+      splitResults = responseAsArray;
       console.log('response', typeof responseAsArray);
       if(!xhttp.response.message){
       renderSearchResult(responseAsArray)
@@ -93,8 +140,84 @@ xhttp.onreadystatechange = function() {
        document.querySelector('.dashboard__searchResults').style.display = 'none'
       }
     }
+
+        //if friend request send. Set the pending style to the user.
+        const bodyId = document.body.getAttribute('id');
+        console.log('bodyId equals', bodyId)
+        const xhrTwo = new XMLHttpRequest();
+      xhrTwo.open("post", "/checkuserstatus", true);
+      xhrTwo.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhrTwo.send(`id=${bodyId}&searchResults=${splitResults}`); 
+    xhrTwo.onreadystatechange = function(){
+        if(xhrTwo.readyState === 4){
+          const responseAsObject = JSON.parse(xhrTwo.response)
+          console.log(responseAsObject)
+          for(let i =0; i < responseAsObject.length; i++){
+            console.log(responseAsObject)
+            console.log(typeof responseAsObject)
+            console.log(responseAsObject[i].username)
+            console.log(responseAsObject[i].id)
+            console.log(responseAsObject[i].status)
+
+          if(responseAsObject[i].status == 4){
+            console.log('4')
+            //change -icon to css font-awesome
+            //need it to get current icon
+            const iconWrapperList= document.querySelectorAll(`#${responseAsObject[i].username}-text`);
+            const iconWrapperArray = [...iconWrapperList];
+            //create new friend icon
+            console.log(iconWrapperArray)
+            for(let i=0; i<iconWrapperArray.length; i++){
+              let friendIcon = document.createElement('i')
+              //friendIcon.classList += ' fas'
+            friendIcon.classList = 'iconPostFriend'
+            iconWrapperArray[i].style.background = 'white'
+            iconWrapperArray[i].style.color = 'darkgrey'
+              iconWrapperArray[i].textContent = ''
+              iconWrapperArray[i].classList += `status4`
+              iconWrapperArray[i].appendChild(friendIcon)
+            }
+            //document.querySelector(`#${responseAsObject[i].username}-text`).appendChild(friendIcon)
+            console.log('response 4', document.querySelector(`#${responseAsObject[i].username}-text`))
+            //document.querySelector(`#${responseAsObject[i].username}`).classList += ' search__result_friend'
+            //document.querySelector(`#${responseAsObject[i].username}-icon`).classList = 'iconPostFriend'
+          }
+          if(responseAsObject[i].status == 2 || responseAsObject[i].status == 3){
+            const iconWrapperList= document.querySelectorAll(`#${responseAsObject[i].username}-text`);
+            const iconWrapperArray = [...iconWrapperList];
+            for(let i=0; i<iconWrapperArray.length; i++){
+              let friendIcon = document.createElement('i')
+              //friendIcon.classList += ' fas'
+              friendIcon.classList = 'iconPostFriend'
+              iconWrapperArray[i].textContent = 'requested'
+              iconWrapperArray[i].style.background = 'darkSlateBlue';
+              iconWrapperArray[i].style.color = 'darkgrey';
+              iconWrapperArray[i].classList += `status2`
+              iconWrapperArray[i].appendChild(friendIcon)
+              /*iconWrapperArray[i].addEventListener('click', e => e {
+
+              })*/          
+            }
+              /*console.log('2')
+              console.log('response matches')
+              console.log(document.querySelector(`#${responseAsObject[i].username}-icon`))
+              console.log(document.querySelector(`#${responseAsObject[i].username}`))
+            document.querySelector(`#${responseAsObject[i].username}-text`).textContent = ''
+            document.querySelector(`.${responseAsObject[i].username}`).classList.add('search__result_pending')
+            document.querySelector(`#${responseAsObject[i].username}-icon`).classList.add('iconPostFriend')
+            console.log(document.querySelector(`#${responseAsObject[i].username}-icon`))
+            //document.querySelector(`#${responseAsObject[i].username}-icon`).classList = 'fa'
+           // document.querySelector(`#${responseAsObject[i].username}`).style.fontFamily = 'Font Awesome 5 Free'
+            console.log(document.querySelector(`#${responseAsObject[i].username}`))
+            console.log(document.querySelector(`#${responseAsObject[i].username}-icon`))*/
+          }   
+        }
+        handleSearchClickIfUserNotAdded()   
+        }
+      } 
 }
 })
+
       //document.querySelector('.dashboard__searchResults').innerHTML = renderSearchResult();
       
       //document.querySelector('.dashboard__searchResults').innerHTML = renderSearchResult()
@@ -118,6 +241,95 @@ xhttp.onreadystatechange = function() {
               )
           .then(data=>{console.log(data)})*/
       })
+
+      //SEE FRIEND REQUESTS AND SET NUMBER FOR THESE IN SPAN BELOW - 
+      //WHEN CLICKED FRIEND REQUESTS SHOULD ROUTE TO A NEW PAGE.
+      // IF THE PERSON CLICKS ACCEPT OR REJECT THIS SHOULD UPDATE
+      //BOTH TABLES FOR EACH USER.
+      //IF THEY ACCEPT ALL USERS SHOULD BE DISPLAYED IN DASHBOARD.
+    /*  const xhr = new XMLHttpRequest();
+      xhr.open("get", "/getCurrentUser", true);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+     xhr.send();
+     xhr.onreadystatechange = function() {
+       document.body.setAttribute('id', `${xhr.response}`)
+     }*/
+     function renderFriendToDashboard(index, username){
+      let newResult = ` 
+          <div id="${index}" class="dashboard__searchResult" style="margin-bottom: 10px; box-shadow: 0px 0px 1px 2px darkgrey; border-radius: 5px; margin-left: 20px; margin-right: 20px; padding-left: 30px; justify-content: space-between; min-width: 100px; display: flex; border: 1px solid darkgrey; color: #605f62; letter-spacing: 0.13rem; background: lightgrey;">
+            <p style="font-weight: 900; text-shadow: 0px 0px 0px 1px #4d4c4e; font-weight: 22px;" class="${index}">${username}</p>
+            <a class="dashboard__contact" style="padding-bottom: 5px; align-items: center; background: white; color: darkgrey; min-width: 30px; display: flex; flex-direction: column-reverse;">Contact<i class="fas fa-camera" style="padding-bottom: 2px;"></i></a>
+          </div>
+        `
+        document.querySelector('.dashboard__chats').innerHTML += newResult
+     }
+     let searchResultList = [];
+     const xhttp2 = new XMLHttpRequest();
+      xhttp2.open("get", "/friendsList", true);
+      xhttp2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+     xhttp2.send();
+     xhttp2.onreadystatechange = function() {
+      if (xhttp2.readyState === 4){
+        console.log(xhttp2.response)
+        console.log(typeof xhttp2.response)
+        const friendsIds = JSON.parse(xhttp2.response)
+
+        const xhttp3 = new XMLHttpRequest()
+        xhttp3.open("post", "/getusers", true);
+        xhttp3.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp3.send(`id=${friendsIds}`);
+        xhttp3.onreadystatechange = function() {
+       // const responseAsArray = [...splitResponse]
+        //console.log(responseAsArray)
+        if (xhttp3.readyState === 4){
+          const friendsUsernames = JSON.parse(xhttp3.response)
+          console.log(friendsUsernames)
+          console.log(friendsIds)
+          async function renderElements(){
+          for(let i =0; i<friendsIds.length;i++){
+            await renderFriendToDashboard(friendsIds[i], friendsUsernames[i])
+            //send friend request
+          }
+          searchResultList = [...document.querySelectorAll('.dashboard__searchResult')]
+      //const searchResultListUserName = [...document.querySelectorAll('.search__result')]
+        }
+        renderElements()
+        }
+      }
+     }
+    }
+    function handleUserAdd(e, i){
+        console.log('handleclick')
+        const current = e.currentTarget
+        if(current.children[0].style.background == 'white'){
+          console.log('handleclick if for white')
+          return
+        } else{
+          console.log('handleclick else')
+        console.log('text',document.querySelector('.search__result').textContent)
+        console.log('body.id', document.body.id)
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/addfriend", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(`username=${searchResultList[i].children[0].textContent}&id=${document.body.id}`);
+        xhttp.onreadystatechange = function() {
+        console.log('xhr ready state change')
+        //based on what is returned
+    if (xhttp.readyState === 4 && xhttp.response == 'user_added') {
+        current.children[1].classList += ' search__result_pending'
+        current.children[1].textContent = ''
+        const icon = document.createElement('i')
+        current.children[1].appendChild(icon);
+        icon.classList += 'fas fa-address-book';
+        for (let i=0; i<searchResultList.length; i++){
+  searchResultList[i].addEventListener('click', e => handleUserAdd(e, i))
+  //console.log('adding event listener', searchResultList[i])
+}
+    }
+  }
+}
+//current.removeEventListener('click', handleUserAdd)
+}
     </script>
 </body>
 </html>

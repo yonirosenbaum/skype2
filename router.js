@@ -37,12 +37,163 @@ module.exports = function(app){
     app.get('/signup', isUserSignedIn, function(req,res){
         res.render('signup')
     })
-    app.get('/', requireAuth, function(req,res){
+    app.get('/room', requireAuth, function(req,res){
         //console.log('hi there')
-        res.redirect(`/${uuidV4()}`)
+        res.redirect(`/room/${uuidV4()}`)
     })
+    app.get('/room/:room', (req, res)=>{
+        res.render('room', {roomID: req.params.room})
+    });
     app.get('/dashboard', requireAuth, function(req,res){
         res.render('dashboard', {searchResults: ''})
+    })
+    app.get('/friendsList', function(req,res){
+        const id = req.session.user.id;
+        const getUsername = `SELECT * FROM userdata where id = '${id}'`;
+        db.query(getUsername, function(err,data){
+            if(err){
+                console.log(err)
+            }
+            const username = data[0].username;
+            const getFriends = `SELECT * FROM ${username} WHERE status = '4'`
+            db.query(getFriends, function(err,data){
+                if(err){
+                    console.log(err)
+                    res.end()
+                } else {
+                    let friends = []
+                    let user = []
+                    for(let i=0; i<data.length; i++){
+                        friends.push(data[i].id)
+                        user.push(data[i].username)
+                    }
+                    res.send(friends);
+                   // res.end()
+                }
+            })
+        })
+    })
+    app.post('/getusers', function(req,res){
+        const idArray = req.body.id.split(',')
+        let getUsernames = `SELECT username FROM userdata WHERE (id = '${idArray[0]}')`
+        if(idArray[1]){
+        for(let i = 1; i<idArray.length; i++){
+            getUsernames += ` OR (id = '${idArray[i]}')`
+        }
+    }
+    console.log(getUsernames)
+    db.query(getUsernames, function(err,data){
+        if(err){
+            console.log(err)
+        } else {
+            console.log(data)
+            let usernames = []
+            for(let i=0; i<data.length;i++){
+                usernames.push(data[i].username)
+            }
+            console.log(usernames)
+            res.send(usernames)
+        }
+    })
+    })
+    app.post('/newrequests', function(req,res){
+        const userId = req.session.user.id
+        const getUsername = `SELECT * FROM userdata WHERE id = '${userId}'`
+        db.query(getUsername, function(err, data){
+            if(err){
+                console.log(err)
+                res.end()
+            }
+            else{ 
+            let username = data[0].username;
+            console.log('current user', username)
+            const getFriendRequests = `SELECT * FROM ${username} WHERE status = '3'`
+            db.query(getFriendRequests, function(err, data){
+                if(err){
+                    console.log(err)
+                    res.send('[]')
+                }
+                if(!data[0]){
+                    console.log('no friend requests')
+                    res.send('')
+                }
+                else if(data){
+                    console.log('data from friend requests', data)
+                    let dataArray = [];
+                    for(let i=0; i<data.length;i++){
+                        dataArray.push(data[i])
+                    }
+                    console.log('dataArray',dataArray)
+                    res.send(dataArray)
+                    //res.render('requests')
+                }
+            })
+        }
+        })
+    })
+    app.post('/addorremoveuser', function(req,res){
+        console.log('add remove id', req.body.id)
+        console.log('add remove button',req.body.button)
+        console.log('req.session', req.session.user.id)
+        console.log('targetUser', req.body.targetUser)
+        const id = req.session.user.id;
+        const targetUser = req.body.targetUser
+        
+        const getUsername = `SELECT * FROM userdata WHERE id = "${id}"`
+        db.query(getUsername, function(err,data){
+            if(err){
+                console.log(err)
+                res.end()
+            } else{
+                const username = data[0].username;
+                console.log('my username', username)
+                if(req.body.button == 'plus'){
+                    //update from both
+                    const addUserToCurrent =
+                    `UPDATE ${username} SET status='4' WHERE username='${targetUser}'`
+                    db.query(addUserToCurrent, function(err,data){
+                        if(err){
+                            console.log(err)
+                        } else{
+                            console.log(`updated ${targetUser} in ${username}`)
+                        }
+                    })
+                    const addUserToTarget =
+                    `UPDATE ${targetUser} SET status='4' WHERE username='${username}'`
+                    db.query(addUserToTarget, function(err,data){
+                        if(err){
+                            console.log(err)
+                        } else{
+                            console.log(`updated ${username} in ${targetUser}`)
+                        }
+                    })
+                }
+                else if(req.body.button == 'minus'){
+                    //delete from both
+                    const deleteTargetUserFromCurrentUser=
+                    `DELETE FROM ${username} WHERE username='${targetUser}'`
+                    db.query(deleteTargetUserFromCurrentUser, function(err, data){
+                        if(err){
+                            console.log(err)
+                        } else{
+                            console.log(`${targetUser} deleted from ${username}`)
+                        }
+                    })
+                    const deleteCurrentUserFromTargetUser=
+                    `DELETE FROM ${targetUser} WHERE username='${username}'`
+                    db.query(deleteCurrentUserFromTargetUser, function(err, data){
+                        if(err){
+                            console.log(err)
+                        } else{
+                            console.log(`${username} deleted from ${targetUser}`)
+                        }
+                    })
+                }
+            }
+        })
+    })
+    app.get('/requests', requireAuth, function(req,res){
+        res.render('requests')
     })
     app.post('/search', requireAuth, async function(req,res){
         const searchInput = req.body.searchInput.trim().toLowerCase();
@@ -53,10 +204,12 @@ module.exports = function(app){
             //console.log('search query during sql before conditionals')
             //console.log('data', data)
             const dataArray = [];
+            console.log('data for status 4 on search', data[0].status)
             for (let i=0; i<data.length; i++){
+                    console.log('post not equal to status 4', data)
                 dataArray.push(`${data[i].username}`)
-            }
-            console.log(dataArray)
+        }
+            console.log('datarray for search', dataArray)
             if(data){
                 //console.log('if data', dataArray)
                 res.render('search', {searchResults: dataArray})
@@ -73,7 +226,7 @@ module.exports = function(app){
     })
     app.post('/searchUpdate', async function(req,res){
         const searchInput = req.body.searchInput.trim().toLowerCase();
-        const sql = `SELECT * FROM userdata WHERE username LIKE '${searchInput}%'`
+        const sql = `SELECT * FROM userdata WHERE username LIKE '${searchInput}%' LIMIT 10`
         await db.query(sql, function(err,data){
             //console.log('search query during sql before conditionals')
             //console.log('data', data)
@@ -99,11 +252,11 @@ module.exports = function(app){
     app.post('/addfriend', async function(req,res){
         //username of user being added
         const username = req.body.username;
-        console.log('username', username)
+        //console.log('username', username)
         //my user id
         const id = Number(req.body.id);
-        console.log('id', req.body.id)
-        console.log('from addfriend')
+        //console.log('id', req.body.id)
+       // console.log('from addfriend')
         let currentUsername = '';
         let targetUserId = 0;
         const getCurrentUserInfo = `SELECT * FROM userdata WHERE id = '${id}'`
@@ -121,6 +274,8 @@ module.exports = function(app){
             if(err){
                 console.log(err)
             } else{
+                console.log('adding user data object', data)
+                console.log('adding user username', username)
                 //add pending request to the current user             
                 targetUserId = parseInt(data[0].id);
                 console.log('getTargetUserId SQL', targetUserId)
@@ -144,30 +299,80 @@ module.exports = function(app){
             }
             })
         }})
-        console.log('getTargetUserId SQL', targetUserId)
+        //console.log('getTargetUserId SQL', targetUserId)
         //I need to get a way to get the current user- maybe set the current user in the logout name
         //get the id of the said user somehow- by sending a query to the id here
-        console.log('currentUsername:', currentUsername)
-        console.log('targetUserId:', targetUserId)
-        console.log('username:', username)
+        //console.log('currentUsername:', currentUsername)
+       // console.log('targetUserId:', targetUserId)
+       // console.log('username:', username)
     })
-    app.post('/checkuserstatus', function(req,res){
+    app.post('/checkuserstatus', async function(req,res){
         const id = req.body.id;
-        console.log('checkuserstatus id', id)
-        console.log(req.body)
-        console.log(typeof id)
+       // console.log('checkuserstatus id', id)
+       // console.log(req.body)
+       // console.log(typeof id)
         const searchResults = req.body.searchResults;
+        //console.log('search result', searchResults)
+       // console.log('typeof search result', searchResults)
+       const newsearchResults = searchResults.split(',')
+       /*console.log('split searchresults',newsearchResults)
+       console.log(typeof newsearchResults)
+       let SQLSearchResultsArray = []; 
+       for (let i=0; i<newsearchResults.length; i++){
+           SQLSearchResultsArray.push(`${newsearchResults[i]}`)
+       }
+       */
+       //console.log('post loop array', SQLSearchResultsArray);
+       let ArrayAsString = `${newsearchResults}`
+       //let ArrayWithoutBrackets = ArrayAsString.substring(0, (ArrayAsString.length))
+       console.log('type of array', ArrayAsString)
+       console.log('arrayasstring',ArrayAsString)
+      /* 
+       console.log(ArrayWithoutBrackets)
+       console.log(typeof ArrayWithoutBrackets)
+       console.log(ArrayWithoutBrackets[0])
+       console.log(ArrayWithoutBrackets[(ArrayWithoutBrackets.length-1)])
+       */
+        let username = []
         const mainTableRequest = `SELECT * FROM userdata WHERE id = '${id}'`
-        db.query(mainTableRequest, function(err,data){
+        await db.query(mainTableRequest, async function(err,data){
             if(err){
                 console.log(err)
+
             } else{
-                console.log('data from check user status', data)
+            
+                console.log('data from check user status array[0]', data[0].username)
+
                 //console.log('username', data[0].username)
-                data[0].username
+
+                //Get user information of all users in search page
+                const currentUserUsername = data[0].username
+                let queryFriendStatus = `SELECT * FROM ${currentUserUsername} WHERE username IN(`;
+                for(let i = 0 ;i<newsearchResults.length;i++){
+                    queryFriendStatus = queryFriendStatus + `"` + newsearchResults[i] + `"` + `,`;
+                  }
+                  
+                  queryFriendStatus = queryFriendStatus.substring(0, (queryFriendStatus.length - 1));
+                  console.log('queryFriendStatus', queryFriendStatus)
+                  queryFriendStatus = queryFriendStatus + `)`
+                
+                await db.query(queryFriendStatus, function(err, data){
+                    if(err){
+                        console.log(err)
+                    } else{
+                        //console.log('data from queryfriend status request',data)
+                        const sendUserFriendInfo = []
+                       /* for(let i=0; data.length; i++){
+                        const userFriendStatus = {username: `${data[0].username}`, status: `${data[i].status}`}
+                        sendUserFriendInfo.push(userFriendStatus)
+                        }*/
+                        console.log('queryFriend status final request on router', data)
+                        res.send(data)
+                    }
+                })
             }
         })
-
+        console.log('checkuserstatus username', username[0])
     })
     app.get('/getCurrentUser', function(req,res){
         res.send(`${req.session.user.id}`)
@@ -176,9 +381,9 @@ module.exports = function(app){
         req.session.destroy()
         res.redirect('/login')
     })
-    app.get('/room/:room', requireAuth, (req, res)=>{
-        res.render('room', {roomID: req.params.room})
-    });
+    app.get('/', requireAuth, function(req,res,next){
+        res.redirect('dashboard')
+    })
     //Authenticate user before Authentication.signin route handler
     //this handler gives them a token.
     app.post('/userlogin', Authentification.signin);

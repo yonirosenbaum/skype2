@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 // app.listen also does the same thing as server.listen with the server created above.
 // the advantage of setting a variable as const Server is that you
 // can reuse the server for listening to other requests.
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {origins: '*:*'});
 const cors = require('cors');
 //Allows different clients to interact with one another
 // so they can send requests to each other without a server.
@@ -19,13 +19,13 @@ const authRoutes = require('./controllers/authentification');
 const Router = require('./router');
 const expressSession = require('express-session');
 
+//app.use(cors())
 //SETUP
 const peerServer = ExpressPeerServer(server, {
     debug: true
 })
-app.use(express.static('public'));
-app.use(cors())
 app.use('/peerjs', peerServer);
+app.use(express.static('public'));
 app.use(bodyParser.json('*/*'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
@@ -47,15 +47,23 @@ app.use(expressSession({
 //VIEW ENGINE SETUP
 app.set('view engine', 'ejs');
 //SOCKETS SETUP
+//When socket io is connected to on script.js, this is called
 io.on('connection', socket => {
     socket.on('join-room', (roomID, userID) => {
+        console.log('room joined on socket')
         //this functions works only once room.ejs ROOM_ID variable is created
         socket.join(roomID)
+        //when the user joins room tells the app the user connected so they can be added to the stream
         socket.to(roomID).broadcast.emit('user-connected', userID);
+        console.log('roomID', roomID)
+        console.log('userId', userID)
         socket.on('message', message => {
             //send message to the same room
             io.to(roomID).emit('createMessage', message)
         })
+        socket.on('disconnect', () => {
+            socket.to(roomID).broadcast.emit('user-disconnected', userID)
+          })
     })
 })
 /*

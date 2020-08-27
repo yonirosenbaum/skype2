@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard</title>
-    <link href="/dashboard.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/solid.min.css" integrity="sha512-QN7X/bUbbeel9bbq6JVNJXk1Zowt+n+QPN+DjhEmTa4TdL1YPCsCey5JrvfRW8xp28LDYgGG/waNVdrhwMQmVQ==" crossorigin="anonymous" />    <link href="/dashboard.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
     <script
     src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"
     data-auto-a11y="true"
+    defer
   ></script>
   <script>
     const SEARCH_RESULTS = "<%= searchResults %>"
@@ -17,10 +19,11 @@
 </head>
 <body>
     <div class="dashboard">
-        <div class="dashboard__header">
-            <h4>Your Chats</h4>
-            <div style="visibility: hidden; position: relative; display: flex; flex-direction: column;">
-            <form class="dashboard__searchForm" action="/search" method="POST">
+        <div class="dashboard__header" style="width: 100%;">
+          <a style="color: white; padding-right: 40px; text-decoration: none;" href="/dashboard"><h4>Your Chats</h4></a>
+          <a href="/requests" style="text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
+          <div style="visibility: hidden; position: relative; display: flex; flex-direction: column;">
+            <form class="dashboard__searchForm" style="visibility: hidden;" action="/search" method="POST">
               <input name="searchInput" class="dashboard__searchInput" type="text" placeholder="Search for a user"/>
               <div class="dashboard__searchIcon__wrapper">
                  <a><i class="dashboard__searchIcon fa fa-search"></i></a>
@@ -29,14 +32,16 @@
            <div style="display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
            </div>
         </div>
-           <a class="dashboard__logout">Log Out</a>
+         <a class="dashboard__logout" style="float: left;">Log Out</a>
         </div>
-        <div class="search__resultsList">
+        <div style="min-height: 100vh; background: darkgrey; padding-top: 10px; padding-left: 10px; padding-right:10px;" class="search__resultsList">
         </div>
-        <div class="search__backButton" style="background: #d22d46; align-items: center; padding-left: 20px; height: 40px; font-weight: 600; min-width: 100px; display: flex; border: 1px solid lightgrey; color: lightgrey;">
+        <footer class="search__backButton" style="position: -webkit-sticky; position: sticky; bottom: 0; width: 100%; background: #d22d46; align-items: center; padding-left: 20px; height: 40px; font-weight: 600; min-width: 100px; display: flex; border: 1px solid lightgrey; color: lightgrey;">
+          <a href="/dashboard" style="padding-top: 20px; text-decoration: none; color: lightgrey; height: 100%; width: 100%;">
           <i style="padding-right: 10px;" class="fas fa-undo-alt"></i>
           Return to dashboard
-        </div>
+        </a>
+      </footer>
     </div>
     <script>
        //render search results from dashboard searchbar
@@ -46,16 +51,18 @@
           const renderResultsAsHtml = results.map(result=>{
             if(results){
           let newResult = ` 
-          <div class="dashboard__searchResult" style="padding-left: 20px; font-weight: 600; justify-content: space-between; min-width: 100px; display: flex; border: 1px solid lightgrey; color: lightgrey; background: black;">
-            <p class="search__result ">${result}</p>
-            <a class="dashboard__search__add" style="padding-bottom: 5px; align-items: center; background: green; min-width: 30px; display: flex; flex-direction: column-reverse;">add<i class="fas fa-user" style="padding-bottom: 2px;"></i></a>
+          <div class="dashboard__searchResult" style="border-radius: 5px; padding-left: 20px; font-weight: 600; justify-content: space-between; min-width: 100px; max-height: 50px; display: flex; box-shadow: 0px 0px 2px 2px darkgrey; color: lightgrey; background: black;">
+            <p class="search__result">${result}</p>
+            <a id="${result}" class="dashboard__search__add" style="color: lightgrey; padding-bottom: 5px; align-items: center; background: rgb(45,160,45); min-width: 30px; display: flex; flex-direction: column-reverse;"><span id="${result}-text">add</span><i id="${result}-icon" class="fas fa-user" style="padding-bottom: 2px;"></i></a>
           </div>
+          <div style="background: darkgrey; height: 10px;"></div>
         `
         document.querySelector('.search__resultsList').innerHTML += newResult
            }})
       }
       renderSearchResult(splitResults)
                 //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
+const xhrTwo = new XMLHttpRequest();
 const xhr = new XMLHttpRequest();
       xhr.open("get", "/getCurrentUser", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -68,12 +75,41 @@ const xhr = new XMLHttpRequest();
        console.log('xhr response', xhr.response)
        let bodyId = xhr.response
        //checkUserFriendshipStatus(bodyId)
-       /*const xhrTwo = new XMLHttpRequest();
       xhrTwo.open("post", "/checkuserstatus", true);
       xhrTwo.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhrTwo.send(`id=${bodyId}&searchResults=${splitResults}`);     */
+      xhrTwo.send(`id=${bodyId}&searchResults=${splitResults}`); 
      }
     }
+    //if friend request send. Set the pending style to the user.
+    xhrTwo.onreadystatechange = function(){
+        if(xhrTwo.readyState === 4){
+          const responseAsObject = JSON.parse(xhrTwo.response)
+          for(let i =0; i < responseAsObject.length; i++){
+            console.log(responseAsObject)
+            console.log(typeof responseAsObject)
+            console.log(responseAsObject[i].username)
+            console.log(responseAsObject[i].id)
+            console.log(responseAsObject[i].status)
+            if(responseAsObject[i].status == 2){
+              console.log('response matches')
+              console.log(document.querySelector(`#${responseAsObject[i].username}-icon`))
+              console.log(document.querySelector(`#${responseAsObject[i].username}`))
+            document.querySelector(`#${responseAsObject[i].username}-text`).textContent = ''
+            document.querySelector(`#${responseAsObject[i].username}`).classList += ' search__result_pending'
+            document.querySelector(`#${responseAsObject[i].username}-icon`).classList = 'iconPost'
+            //document.querySelector(`#${responseAsObject[i].username}-icon`).classList = 'fa'
+           // document.querySelector(`#${responseAsObject[i].username}`).style.fontFamily = 'Font Awesome 5 Free'
+            console.log(document.querySelector(`#${responseAsObject[i].username}`))
+            console.log(document.querySelector(`#${responseAsObject[i].username}-icon`))
+          }
+          if(responseAsObject[i].status == 4){
+            document.querySelector(`#${responseAsObject[i].username}-text`).textContent = 'Friend'
+            document.querySelector(`#${responseAsObject[i].username}`).classList += ' search__result_friend'
+            document.querySelector(`#${responseAsObject[i].username}-icon`).classList = 'iconPostFriend'
+          }
+        }
+        }
+      } 
            //See if users have been added, are pending or havent been added.
           
      /*function checkUserFriendshipStatus(bodyId){
@@ -88,15 +124,20 @@ const xhr = new XMLHttpRequest();
 }*/
 
       //send friend request
-      //setTimeout(console.log('pre', document.body.id), 500)
-      document.querySelector('.dashboard__searchResult').addEventListener('click', function handleUserAdd(e){
+      const searchResultList = [...document.querySelectorAll('.dashboard__searchResult')]
+      //const searchResultListUserName = [...document.querySelectorAll('.search__result')]
+      
+      function handleUserAdd(e, i){
         const current = e.currentTarget
+        if(current.children[0].style.background == 'white'){
+          return
+        } else{
         console.log('text',document.querySelector('.search__result').textContent)
         console.log('body.id', document.body.id)
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "/addfriend", true);
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send(`username=${document.querySelector('.search__result').textContent}&id=${document.body.id}`);
+        xhttp.send(`username=${searchResultList[i].children[0].textContent}&id=${document.body.id}`);
         xhttp.onreadystatechange = function() {
         console.log('xhr ready state change')
         //based on what is returned
@@ -105,11 +146,16 @@ const xhr = new XMLHttpRequest();
         current.children[1].textContent = ''
         const icon = document.createElement('i')
         current.children[1].appendChild(icon);
-        icon.classList += 'fas fa-address-book'
+        icon.classList += 'fas fa-address-book';
         current.removeEventListener('click', handleUserAdd)
     }
+  }
 }
-})
+}
+for (let i=0; i<searchResultList.length; i++){
+  searchResultList[i].addEventListener('click', e => handleUserAdd(e, i))
+  //console.log('adding event listener', searchResultList[i])
+}
     </script>
 </body>
 </html>

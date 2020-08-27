@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+    <link href="/dashboard.css" rel="stylesheet"/>
+    <script
+    src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"
+    data-auto-a11y="true"
+  ></script>
+  <script>
+      //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
+      const xhr = new XMLHttpRequest();
+      xhr.open("get", "/getCurrentUser", true);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+     xhr.send();
+     xhr.onreadystatechange = function() {
+       document.body?.setAttribute('id', `${xhr.response}`)
+       let responseAsObject = ''
+       let bodyId = document.body.getAttribute('id');
+         if (xhr.readyState === 4){
+           
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("post", "/newrequests", true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send(`id=${bodyId}`); 
+    xhttp.onreadystatechange = function(){
+        if(xhttp.readyState === 4){
+          if(xhttp.response){
+          console.log(xhttp.response)
+          //const responseAsObject = JSON.parse(xhttp.response)
+          console.log(responseAsObject)
+          responseAsObject = JSON.parse(xhttp.response)
+          //let responseArray = []
+          for(let i =0; i < responseAsObject.length; i++){
+            //responseArray.push({id: responseAsObject[i].id, username: responseAsObject[i].username})
+            /*console.log(responseAsObject)
+            console.log(typeof responseAsObject)
+            console.log(responseAsObject[i].username)
+            console.log(responseAsObject[i].id)
+            console.log(responseAsObject[i].status)*/
+             /* console.log('response matches')
+              console.log(document.querySelector(`#${responseAsObject[i].username}-icon`))
+              console.log(document.querySelector(`#${responseAsObject[i].username}`))
+            document.querySelector(`#${responseAsObject[i].username}-text`).textContent = ''
+            document.querySelector(`#${responseAsObject[i].username}`).classList += ' search__result_pending'
+            document.querySelector(`#${responseAsObject[i].username}-icon`).classList = 'iconPost'*/
+            //document.querySelector(`#${responseAsObject[i].username}-icon`).classList = 'fa'
+           // document.querySelector(`#${responseAsObject[i].username}`).style.fontFamily = 'Font Awesome 5 Free'
+            //console.log(document.querySelector(`#${responseAsObject[i].username}`))
+           // console.log(document.querySelector(`#${responseAsObject[i].username}-icon`))
+           let newResult = ` 
+          <div id="${responseAsObject[i].id}" class="requests__searchResult" style="border-radius: 4px; opacity: 1; z-index: 3; margin-right: 20px; margin-left: 20px; opacity: 1; padding-left: 20px; font-weight: 600; justify-content: space-between; min-width: 100px; display: flex; box-shadow: 0px 0px 2px 2px rgba(40,40,40,0.8); color: lightgrey; background: black;">
+            <p class="search__result">${responseAsObject[i].username}</p>
+            <div style="display: flex;">
+            <a id="${responseAsObject[i].id}" class="request__plus dashboard__search__add request__result" style="margin: 8px; box-shadow: 0px 0px 1px 2px green; border-radius: 5px; padding-bottom: 5px; width: 56px; align-items: center; background: rgb(45,200,45); min-width: 30px; display: flex; flex-direction: column-reverse;"><span id="$result-text">add</span><i id="result-icon" class="fas fa-plus" style="padding-bottom: 2px;"></i></a>
+            <a id="${responseAsObject[i].id}" class="request__minus dashboard__search__add request__result" style="margin: 8px; box-shadow: 0px 0px 1px 2px red; border-radius: 5px; padding: 5px; padding-bottom: 5px; width: 56px; align-items: center; background: rgb(231,24,55); min-width: 30px; display: flex; flex-direction: column-reverse;"><span id="$result-text">remove</span><i id="result-icon" class="fas fa-minus" style="padding-bottom: 2px;"></i></a>
+            </div>
+          </div>
+        `
+        document.querySelector('.friendsList').innerHTML += newResult
+          }
+          //console.log('responseArray', responseArray)
+          function addEventListenersToRequests(){
+      let searchResultList = [...document.querySelectorAll('.request__plus')]
+      for (let i=0; i<searchResultList.length; i++){
+        console.log(searchResultList[i])
+        searchResultList[i].addEventListener('click', e => {
+         //console.log('adding event listener', searchResultList[i])
+         console.log('plus')
+        let targetId = e.currentTarget.getAttribute('id')
+        const xhr = new XMLHttpRequest();
+      xhr.open("post", "/addorremoveuser", true);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+     xhr.send(`id=${targetId}&button=plus&targetUser=${e.currentTarget.parentElement.previousElementSibling.textContent}`);
+      })
+    }
+      let searchResultListMinus = [...document.querySelectorAll('.request__minus')]
+      for (let i=0; i<searchResultListMinus.length; i++){
+        searchResultListMinus[i].addEventListener('click', e => {
+         //console.log('adding event listener', searchResultList[i])
+      console.log('minus')
+        let targetId = e.currentTarget.getAttribute('id')
+        const xhr = new XMLHttpRequest();
+      xhr.open("post", "/addorremoveuser", true);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+     xhr.send(`id=${targetId}&button=minus&targetUser=${e.currentTarget.parentElement.previousElementSibling.textContent}`);
+      })}
+    }
+    addEventListenersToRequests()
+        } else{
+          console.log('else statement here eddjkk')
+          document.querySelector('.friendsList').innerHTML += `<a href="/dashboard" style="color: white; text-decoration: none; cursor: pointer;" class="requests__noRequests"><p class="requests__noRequestsText">You have no friend requests at the moment.</p></a>`
+          document.querySelector('.friendsList').style.color = 'white';
+        }}
+      }
+    }}
+    //const FRIEND_REQUESTS_SPLIT = FRIEND_REQUESTS.split(',');
+    //console.log(typeof FRIEND_REQUESTS)
+    //JSON.parse(req)
+    /*const resJSON = JSON.parse(`${FRIEND_REQUESTS}`)
+    console.log(`${resJSON[0]}`)
+    console.log(``)
+    const JSONResponse = JSON.parse(FRIEND_REQUESTS[0].id)
+    console.log('client', JSONResponse)
+    console.log('client', FRIEND_REQUESTS)
+    console.log('client', typeof FRIEND_REQUESTS[0])
+    console.log('CLIENT SIDE FRIEND REQUESTS',FRIEND_REQUESTS[0].id)*/
+  </script>
+    <script src="/script"></script>
+</head>
+<body style="min-height: 100vh;">
+  <div>
+    <div style="min-height: 100%;">
+    <div class="dashboard" style="max-height: 150px !important;">
+        <div class="dashboard__header">
+          <a style="color: white; text-decoration: none;" href="/dashboard"><h4>Your Chats</h4></a>
+          <a href="/requests" style="text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
+            <div style="position: relative; display: flex; flex-direction: column;">
+            <form class="dashboard__searchForm" action="/search" method="POST">
+              <input name="searchInput" class="dashboard__searchInput" type="text" placeholder="Search for a user"/>
+              <div class="dashboard__searchIcon__wrapper">
+                 <a><i class="dashboard__searchIcon fa fa-search"></i></a>
+              </div>
+           </form>
+           <div style="display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
+           </div>
+        </div>
+           <a class="dashboard__logout">Log Out</a>
+        </div>
+        <div style="z-index: 1; background:black; height: 100%;">
+            <div style="width: 100%; padding-top: 10px; mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0, 0, 0, 0.7)); background: darkgrey !important; margin-right: 20px; height: 100vh;" class="friendsList">
+            </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <script defer>
+      //1. use session id to get current user user name for first query.
+      //2. use current username table and pass in the target user id. QUERY DEPENDS ON IF PLUS
+      //OR MINUS
+      //need which id was clicked and to get the id attribute and have a conditional
+      //for each conditional return something and pass it into the xml request.
+      //then remove the element with an animation.
+    </script>
+</body>
+</html>

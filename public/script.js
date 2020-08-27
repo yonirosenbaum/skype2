@@ -3,23 +3,28 @@
 //import { PeerServer } from "peer";
 
 //front-end javascript
-const socket = io('/')
+//const socket = io() - works for chrome only
+const socket = io('/') //works for chrome only
 const videoGrid = document.querySelector('#video__grid');
 const clientVideo = document.createElement('video');
 //prevents video from, being played straight away
-clientVideo.muted = true;
+//clientVideo.muted = true;
 
 //path is from server.js app.use call where a peer Sercer is instantiated here
+//use 443 when deploying to heroku
+//https://stackoverflow.com/questions/63122313/websocket-failed-invalid-frame-header
 const peer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '3030'
+    port: '443',
 });
 
 let myVideoStream;
 const myVideo = document.createElement('video')
 myVideo.muted = true;
 const peers = {}
+//when user approves streaming. The stream is passed into 
+// the addVideoStream function and a video element is created using 'myvideo'
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
@@ -39,15 +44,22 @@ socket.on('user-connected', userID=>{
     connectToNewUser(userID, stream);
 })
 //paste here
-
 })
-//get room id from ROOM_ID variable in room.ejs
+socket.on('user-disconnected', userID => {
+    if (peers[userID]) peers[userID].close()
+})
+  
+//get room id from ROOM_ID variable in room.ejs when peer connection
+// is opened
 peer.on('open', ID => {
     console.log(ID)
-
+    console.log(ROOM_ID)
+//when you join the room emit the join-room function which
+//is created in the server. 
 socket.emit('join-room', ROOM_ID, ID);
 })
 
+//when sockets connects user a video stream is added to a video element
 const connectToNewUser = (userID, stream) => {
     //call another user and send him my stream
     const call = peer.call(userID, stream)
@@ -57,7 +69,12 @@ const connectToNewUser = (userID, stream) => {
     call.on('stream', userVideoStream => {
         addVideoStream(video, userVideoStream)
     })
+    console.log(stream)
     console.log('new user', userID)
+    call.on('close', () => {
+        video.remove()
+      })
+      peers[userID] = call
 }
 
 //add a video stream

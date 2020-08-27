@@ -46,6 +46,18 @@ exports.signup = async function(req,res,next){
         return res.status(422).send({error: 'You must provide email and password.'})
     }
     else{
+      const checkIfUserExists = `SELECT * FROM userdata WHERE username = '${username}'`;
+      await db.query(checkIfUserExists, async function(err,data){
+        if(err){
+          console.log('err: user already exists')
+          res.send('user already exists')
+        }
+        else if(!data){
+          res.send('user exists already')
+          console.log('user already exists')
+        }
+        else{
+          console.log('data found')
       const sql = ` INSERT INTO userdata (username, password) VALUES
           ('${username}', '${password}')
       `
@@ -58,6 +70,8 @@ exports.signup = async function(req,res,next){
           initialSQl = 'pass'
         }
       })
+      
+    
       let userId = '';
       const getId = `SELECT * from userdata WHERE username = '${username}'`
       await db.query(sql, function(err, data){
@@ -65,22 +79,26 @@ exports.signup = async function(req,res,next){
           console.log(err)
         } else{
           userId = data.insertId;
+          req.session.user = 
+          {id: userId}
           //console.log('id', userId)
          // console.log('data', data.insertId)
         }
       })
-      const createTable = `CREATE TABLE newuser(
+      const createTable = `CREATE TABLE ${username}(
         id int PRIMARY KEY,
         username VARCHAR(20),
         status int
       )`
-      await db.query(createTable, function(err, data){
+      db.query(createTable, function(err, data){
         if(err){
           console.log(err)
         } else{
           //console.log('table created')
           //console.log(data)
+          res.redirect('/dashboard')
         }
       })
     }
-}
+  })
+    }}
