@@ -4,25 +4,28 @@
 
 //front-end javascript
 //const socket = io() - works for chrome only
-const socket = io('/') //works for chrome only
+'/ refers to the host that servers the page ie look at'
+//THIS IS THE LOCATION OF WHERE THE SERVER IS HOSTING THE SOCKET APP
+const socket = io('/') //works for chrome only- set to '/' or just () returns current
 const videoGrid = document.querySelector('#video__grid');
 const clientVideo = document.createElement('video');
 //prevents video from, being played straight away
 //clientVideo.muted = true;
 
-//path is from server.js app.use call where a peer Sercer is instantiated here
+//path is from server.js app.use call where a peer Server is instantiated here
 //use 443 when deploying to heroku
 //https://stackoverflow.com/questions/63122313/websocket-failed-invalid-frame-header
-const peer = new Peer(undefined, {
+const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '443',
+    port: '443'
 });
 
 let myVideoStream;
 const myVideo = document.createElement('video')
 myVideo.muted = true;
 const peers = {}
+//navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 //when user approves streaming. The stream is passed into 
 // the addVideoStream function and a video element is created using 'myvideo'
 navigator.mediaDevices.getUserMedia({
@@ -32,7 +35,7 @@ navigator.mediaDevices.getUserMedia({
     myVideoStream = stream;
     addVideoStream(myVideo, stream)
     
-peer.on('call', call => {
+myPeer.on('call', call => {
     call.answer(stream)
     const video = document.createElement('video')
     call.on('stream', userVideoStream => {
@@ -51,7 +54,7 @@ socket.on('user-disconnected', userID => {
   
 //get room id from ROOM_ID variable in room.ejs when peer connection
 // is opened
-peer.on('open', ID => {
+myPeer.on('open', ID => {
     console.log(ID)
     console.log(ROOM_ID)
 //when you join the room emit the join-room function which
@@ -62,7 +65,10 @@ socket.emit('join-room', ROOM_ID, ID);
 //when sockets connects user a video stream is added to a video element
 const connectToNewUser = (userID, stream) => {
     //call another user and send him my stream
-    const call = peer.call(userID, stream)
+    const call = myPeer.call(userID, stream)
+    console.log('connectToNewUser stream', stream)
+    console.log('connectToNewUser userID', userID)
+    console.log('socket connectToNewUser###', socket)
     //create a video element
     const video = document.createElement('video');
     //When i receive a video stream I will add it to my client

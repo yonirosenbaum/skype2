@@ -15,7 +15,7 @@
         </div>
         <form class="signup__form" action="/createuser" method="POST">
             <label for="usernameInput"></label>
-            <input class="signup__username" type="text" name="username" id="usernameInput"/>
+            <input class="signup__username" type="text" minlength="6" maxlength="20" name="username" id="usernameInput"/>
             <label minlength="6" maxlength="20" for="passwordInput"></label>
             <input class="signup__password" minlength="6" maxlength="20" type="password" id="passwordInput" name="password"/>
             <div class="signup__button" style="padding: 1px;">
@@ -23,19 +23,42 @@
             </div>
         </form>
     </div>
+    <div class="signup__warning" style="display: none;">Please enter email and password in lowercase letters.</div>
     <script>
-        document.querySelector('.signup__button').addEventListener('mouseenter', function(e){
-            console.log('entered')
-            console.log(document.querySelector('.signup__password').value)
-            if(document.querySelector('.signup__username').value !== '' &&
-            document.querySelector('.signup__password').value !== ''){
+        /*function checkInput(e){
+            const lowerCaseTest = RegExp("[a-z]*");
+            console.log('key up')
+           
+    if((lowerCaseTest.test(document.querySelector('.signup__username').value) !== false) && (lowerCaseTest.test(document.querySelector('.signup__password')) !== false)){
+        console.log('first conditional')   
+        if((document.querySelector('.signup__username').value !== '') &&
+            (document.querySelector('.signup__password').value !== '')){
                 console.log('removed')
                 document.querySelector('.login__submitButton').removeAttribute('disabled');
-            }
-            else{
+                document.querySelector('.login__submitButton').removeAttribute('disabled');
+            } else {
                 document.querySelector('.login__submitButton').disabled = true;
             }
-        })
+        
+        } else {
+            document.querySelector('.login__submitButton').disabled = true ;
+        }
+        }*/
+        function checkInput(e){
+            if(document.querySelector('.signup__password').value === document.querySelector('.signup__password').value.toLowerCase()){
+                console.log('1')
+                if(document.querySelector('.signup__username').value === document.querySelector('.signup__username').value.toLowerCase()){
+                    console.log('2')
+                        document.querySelector('.login__submitButton').removeAttribute('disabled')
+                } else{
+                    document.querySelector('.login__submitButton').disabled = true ;
+                }
+            } else{
+                document.querySelector('.login__submitButton').disabled = true ;
+            }
+        };
+        document.querySelector('.signup__password').addEventListener('keydown', e => checkInput(e))
+        document.querySelector('.signup__username').addEventListener('keydown', e => checkInput(e))
     </script>
 </body>
 </html>

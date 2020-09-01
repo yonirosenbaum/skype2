@@ -139,15 +139,18 @@ xhttp.onreadystatechange = function() {
      if(document.querySelector('.dashboard__searchInput').value.length == 0){
        document.querySelector('.dashboard__searchResults').style.display = 'none'
       }
-    }
+    }  
 
         //if friend request send. Set the pending style to the user.
         const bodyId = document.body.getAttribute('id');
         console.log('bodyId equals', bodyId)
+        console.log('checkuserstatusClientSide')
+        console.log('checkuserstatusClientSide splitResults', splitResults)
         const xhrTwo = new XMLHttpRequest();
       xhrTwo.open("post", "/checkuserstatus", true);
       xhrTwo.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhrTwo.send(`id=${bodyId}&searchResults=${splitResults}`); 
+      xhrTwo.send(`id=${bodyId}&searchResults=${splitResults}`);
+
     xhrTwo.onreadystatechange = function(){
         if(xhrTwo.readyState === 4){
           const responseAsObject = JSON.parse(xhrTwo.response)

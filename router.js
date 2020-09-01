@@ -52,8 +52,12 @@ module.exports = function(app){
         const getUsername = `SELECT * FROM userdata where id = '${id}'`;
         db.query(getUsername, function(err,data){
             if(err){
-                console.log(err)
+                res.send('error')
+            } 
+            if(!data){
+                res.send('no friends found')
             }
+            else if (data[0]){
             const username = data[0].username;
             const getFriends = `SELECT * FROM ${username} WHERE status = '4'`
             db.query(getFriends, function(err,data){
@@ -71,6 +75,7 @@ module.exports = function(app){
                    // res.end()
                 }
             })
+        }
         })
     })
     app.post('/getusers', function(req,res){
@@ -226,6 +231,7 @@ module.exports = function(app){
     })
     app.post('/searchUpdate', async function(req,res){
         const searchInput = req.body.searchInput.trim().toLowerCase();
+        console.log('searchupdate searchinput', searchInput)
         const sql = `SELECT * FROM userdata WHERE username LIKE '${searchInput}%' LIMIT 10`
         await db.query(sql, function(err,data){
             //console.log('search query during sql before conditionals')
@@ -255,6 +261,8 @@ module.exports = function(app){
         //console.log('username', username)
         //my user id
         const id = Number(req.body.id);
+        console.log('addfriend username', username )
+        console.log('addfriend id', id )
         //console.log('id', req.body.id)
        // console.log('from addfriend')
         let currentUsername = '';
@@ -263,7 +271,11 @@ module.exports = function(app){
         await db.query(getCurrentUserInfo, function(err,data){
             if (err){
                 console.log(err)
-            } else{
+            } 
+            if (!data[0]){
+                res.send('friend not found')
+            }
+            else if(data[0]){
                 console.log('data from get current user request',data[0].username.toLowerCase())
                 currentUsername = data[0].username.toLowerCase();
             }
@@ -312,6 +324,8 @@ module.exports = function(app){
        // console.log(req.body)
        // console.log(typeof id)
         const searchResults = req.body.searchResults;
+        console.log('id from checkuserstatus', id)
+        console.log('searchresults checkuserstatus', searchResults)
         //console.log('search result', searchResults)
        // console.log('typeof search result', searchResults)
        const newsearchResults = searchResults.split(',')
@@ -338,8 +352,12 @@ module.exports = function(app){
         await db.query(mainTableRequest, async function(err,data){
             if(err){
                 console.log(err)
-
-            } else{
+                res.send('error')
+            }
+            if(!data[0]){
+                res.send('no user found')
+            }
+            else if(data[0]){
             
                 console.log('data from check user status array[0]', data[0].username)
 
@@ -349,7 +367,7 @@ module.exports = function(app){
                 const currentUserUsername = data[0].username
                 let queryFriendStatus = `SELECT * FROM ${currentUserUsername} WHERE username IN(`;
                 for(let i = 0 ;i<newsearchResults.length;i++){
-                    queryFriendStatus = queryFriendStatus + `"` + newsearchResults[i] + `"` + `,`;
+                    queryFriendStatus = queryFriendStatus + `"` + newsearchResults[i].toLowerCase() + `"` + `,`;
                   }
                   
                   queryFriendStatus = queryFriendStatus.substring(0, (queryFriendStatus.length - 1));
@@ -375,6 +393,7 @@ module.exports = function(app){
         console.log('checkuserstatus username', username[0])
     })
     app.get('/getCurrentUser', function(req,res){
+        console.log('getCurrentUser_ID FROM req.session', req.session.user.id)
         res.send(`${req.session.user.id}`)
     } )
     app.get('/logout', function(req,res){
@@ -389,6 +408,11 @@ module.exports = function(app){
     app.post('/userlogin', Authentification.signin);
     app.post('/createuser', Authentification.signup);
     app.get('/:otherPage', function(req,res,next){
+        if (req.originalUrl.startsWith('/peerjs')) {
+            // skip any /peerjs websocket routes to prevent
+            // unauthorised error
+            next();
+        }
         if(req.session && req.session.user){
             res.redirect('/dashboard')
         } else {

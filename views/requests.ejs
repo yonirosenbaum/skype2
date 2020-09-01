@@ -17,7 +17,8 @@
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
      xhr.send();
      xhr.onreadystatechange = function() {
-       document.body?.setAttribute('id', `${xhr.response}`)
+       if(document.body){
+       document.body.setAttribute('id', `${xhr.response}`)
        let responseAsObject = ''
        let bodyId = document.body.getAttribute('id');
          if (xhr.readyState === 4){
@@ -75,6 +76,7 @@
       xhr.open("post", "/addorremoveuser", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
      xhr.send(`id=${targetId}&button=plus&targetUser=${e.currentTarget.parentElement.previousElementSibling.textContent}`);
+     e.currentTarget.parentElement.parentElement.style.visibility = 'hidden'
       })
     }
       let searchResultListMinus = [...document.querySelectorAll('.request__minus')]
@@ -87,6 +89,7 @@
       xhr.open("post", "/addorremoveuser", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
      xhr.send(`id=${targetId}&button=minus&targetUser=${e.currentTarget.parentElement.previousElementSibling.textContent}`);
+     e.currentTarget.parentElement.parentElement.style.visibility = 'hidden'
       })}
     }
     addEventListenersToRequests()
@@ -96,7 +99,7 @@
           document.querySelector('.friendsList').style.color = 'white';
         }}
       }
-    }}
+    }}}
     //const FRIEND_REQUESTS_SPLIT = FRIEND_REQUESTS.split(',');
     //console.log(typeof FRIEND_REQUESTS)
     //JSON.parse(req)
@@ -109,7 +112,6 @@
     console.log('client', typeof FRIEND_REQUESTS[0])
     console.log('CLIENT SIDE FRIEND REQUESTS',FRIEND_REQUESTS[0].id)*/
   </script>
-    <script src="/script"></script>
 </head>
 <body style="min-height: 100vh;">
   <div>
@@ -119,12 +121,6 @@
           <a style="color: white; text-decoration: none;" href="/dashboard"><h4>Your Chats</h4></a>
           <a href="/requests" style="text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
             <div style="position: relative; display: flex; flex-direction: column;">
-            <form class="dashboard__searchForm" action="/search" method="POST">
-              <input name="searchInput" class="dashboard__searchInput" type="text" placeholder="Search for a user"/>
-              <div class="dashboard__searchIcon__wrapper">
-                 <a><i class="dashboard__searchIcon fa fa-search"></i></a>
-              </div>
-           </form>
            <div style="display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
            </div>
         </div>

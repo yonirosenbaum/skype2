@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-//const cors = require('cors');
+require('./database');
 const server = require('http').Server(app);
 const bodyParser = require('body-parser'); 
 //same as http.createServer()
@@ -18,11 +18,12 @@ const passport = require('passport');
 const authRoutes = require('./controllers/authentification');
 const Router = require('./router');
 const expressSession = require('express-session');
-
-//app.use(cors())
+//
+app.use(cors())
 //SETUP
 const peerServer = ExpressPeerServer(server, {
     debug: true
+    //proxied: true
 })
 app.use('/peerjs', peerServer);
 app.use(express.static('public'));
@@ -50,7 +51,10 @@ app.set('view engine', 'ejs');
 //When socket io is connected to on script.js, this is called
 io.on('connection', socket => {
     socket.on('join-room', (roomID, userID) => {
-        console.log('room joined on socket')
+        console.log('room joined on socket- roomID:', roomID)
+        console.log('room joined on socket- userID:', userID)
+        console.log('room joined on socket- ***socket', socket.handshake.headers)
+        console.log('***')
         //this functions works only once room.ejs ROOM_ID variable is created
         socket.join(roomID)
         //when the user joins room tells the app the user connected so they can be added to the stream
