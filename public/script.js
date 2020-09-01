@@ -18,8 +18,9 @@ const clientVideo = document.createElement('video');
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '19378'
+    port: PORT
 });
+console.log('ROOM PORT IS', PORT)
 
 let myVideoStream;
 const myVideo = document.createElement('video')

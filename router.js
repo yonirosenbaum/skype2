@@ -42,7 +42,7 @@ module.exports = function(app){
         res.redirect(`/room/${uuidV4()}`)
     })
     app.get('/room/:room', (req, res)=>{
-        res.render('room', {roomID: req.params.room})
+        res.render('room', {roomID: req.params.room, port: process.env.port})
     });
     app.get('/dashboard', requireAuth, function(req,res){
         res.render('dashboard', {searchResults: ''})
