@@ -19,6 +19,8 @@ const authRoutes = require('./controllers/authentification');
 const Router = require('./router');
 const expressSession = require('express-session');
 //
+
+
 app.use(cors())
 //SETUP
 const peerServer = ExpressPeerServer(server, {
@@ -112,13 +114,14 @@ app.post('/userlogin', function(req,res,next){
 })
 */
 //app.set('view engine', 'ejs');
-
 //ROUTING
+
 Router(app)
 
-const PORT = process.env.PORT || 3030;
 
+const PORT = process.env.PORT || 3030;
 server.listen(PORT, ()=>{
     console.log('Server is listening on port:', PORT)
 });
+
 

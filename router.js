@@ -2,7 +2,7 @@ const Authentification = require('./controllers/authentification');
 const passportService = require('./services/passport');
 const passport = require('passport');
 const {v4: uuidV4} = require('uuid');
-const db = require('./database'); 
+const db = require('./database');
 
 //authentificate with JWT and don't create a new cookie 
 //based session since we are using JWT. 
@@ -42,7 +42,7 @@ module.exports = function(app){
         res.redirect(`/room/${uuidV4()}`)
     })
     app.get('/room/:room', (req, res)=>{
-        res.render('room', {roomID: req.params.room, port: process.env.port})
+        res.render('room', { roomID: req.params.room })
     });
     app.get('/dashboard', requireAuth, function(req,res){
         res.render('dashboard', {searchResults: ''})

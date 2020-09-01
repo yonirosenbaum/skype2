@@ -4,7 +4,7 @@
 
 //front-end javascript
 //const socket = io() - works for chrome only
-'/ refers to the host that servers the page ie look at'
+// refers to the host that servers the page ie look at'
 //THIS IS THE LOCATION OF WHERE THE SERVER IS HOSTING THE SOCKET APP
 const socket = io('/') //works for chrome only- set to '/' or just () returns current
 const videoGrid = document.querySelector('#video__grid');
@@ -18,9 +18,9 @@ const clientVideo = document.createElement('video');
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: PORT
+    port: '443'
 });
-console.log('ROOM PORT IS', PORT)
+
 
 let myVideoStream;
 const myVideo = document.createElement('video')
