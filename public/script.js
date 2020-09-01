@@ -18,7 +18,7 @@ const clientVideo = document.createElement('video');
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '443'
+    port: '19378'
 });
 
 let myVideoStream;
