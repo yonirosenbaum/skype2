@@ -34,7 +34,7 @@ if (xhttp.readyState === 4 && xhttp.response == 'user_added') {
      path: '/peerjs',
      host: '/',
      port: '443',
-     config: {
+     /*config: {
       'iceServers': [{
               url: 'stun:stun1.l.google.com:19302'
           },
@@ -44,7 +44,7 @@ if (xhttp.readyState === 4 && xhttp.response == 'user_added') {
               username: 'webrtc@live.com'
           }
       ]
- }
+ }*/
 });
  /*myPeer.on('open', function(){
    console.log('on.open')
@@ -82,6 +82,7 @@ const conn = myPeer.connect('callUser')
 socket.on('establishConnection', function(){
    console.log('establishConnection')
    console.log('conn', conn)
+   myPeer.connect('callUser')
    conn.on('open', function(){
    //receive messages
    console.log('connection opened')
