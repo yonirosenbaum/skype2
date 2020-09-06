@@ -72,15 +72,30 @@
         </div>
       </div >
     </div>
+    <div class="callNotificationWrapper" style="z-index: 999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
+      <div style="display: flex;">
+      <div class="callButtons callButtonAnswer" style="border-radius: 6px; background: rgba(0, 0, 0, 0.5); width: 100px; text-align: center; height: 100px; padding: 10px; margin-right: 60px; cursor:pointer; border: 1px solid white;"><i style="box-sizing: content-box; margin: 0 auto; font-size: 32px; color: green; display: block; padding-bottom: 20px;" class="fas fa-phone"></i><div>Answer</div></div>
+      <div class="callButtons callButtonReject" style="border-radius: 6px; background: rgba(0, 0, 0, 0.5); width: 100px; text-align: center; height: 100px; padding: 10px; cursor: pointer; border: 1px solid white;"><i style="box-sizing: content-box; margin: 0 auto; font-size: 32px; color: red; display: block; padding-bottom: 20px;" class="fas fa-phone-slash"></i><div>Reject</div></div>
+     </div>
+    </div>
+    <div class="callRejectionWrapper" style="align-items: center; justify-content: center; z-index: 999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
+      <div>
+        <div style=" padding: 20px; border: 2px solid white; font-size: 900; font-size: 32px;">Call rejected</div>
+      </div>
+    </div>
 </body>
 <script>
-   //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
-   /*const xhr = new XMLHttpRequest();
+    //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
+    const xhr = new XMLHttpRequest();
       xhr.open("get", "/getCurrentUser", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
      xhr.send();
      xhr.onreadystatechange = function() {
+      if(xhr.readyState === 4){
+        console.log('this is the xhr response', xhr.response)
        document.body.setAttribute('id', `${xhr.response}`)
-     }*/
+       //in here you pass the id
+      }
+     }
 </script>
 </html>

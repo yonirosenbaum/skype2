@@ -50,7 +50,11 @@ app.use(expressSession({
 //VIEW ENGINE SETUP
 app.set('view engine', 'ejs');
 //SOCKETS SETUP
-//When socket io is connected to on script.js, this is called
+//When socket io is connected/initiated on script.js, this is called
+//when the room is joined 'user-connected'is emitted to broadcast video
+//a listener is created for message which allows messages to be emitted.
+//roomID and userID are likely part of the socket object and are passed into the broadcast.emit function
+// this tells the socket who to connect to.
 io.on('connection', socket => {
     socket.on('join-room', (roomID, userID) => {
         console.log('room joined on socket- roomID:', roomID)
@@ -71,7 +75,10 @@ io.on('connection', socket => {
             socket.to(roomID).broadcast.emit('user-disconnected', userID)
           })
     })
-})
+    socket.on('callUser', function(){
+        socket.emit('establishConnection')
+    })
+});
 /*
 //LOGIN FORM HANDLING
 // this is actualy the create user form data and not the find user

@@ -37,9 +37,10 @@ module.exports = function(app){
     app.get('/signup', isUserSignedIn, function(req,res){
         res.render('signup')
     })
-    app.get('/room', requireAuth, function(req,res){
+    app.post('/room', requireAuth, function(req,res){
         //console.log('hi there')
-        res.redirect(`/room/${uuidV4()}`)
+        const id = req.body.id;
+        res.redirect(`/room/${id}`)
     })
     app.get('/room/:room', (req, res)=>{
         res.render('room', { roomID: req.params.room })
@@ -391,6 +392,30 @@ module.exports = function(app){
             }
         })
         console.log('checkuserstatus username', username[0])
+    })
+    app.post('/calluser', function(req,res){
+        const {targetUsername} = req.body;
+        const {targetID} = req.body;
+        const {currentID} = req.body;
+        console.log('typee', typeof req.body)
+        console.log(req.body)
+        console.log('request body', req.body)
+        console.log(targetUsername, targetID, currentID)
+        //console.log('parsed', JSON.parse(req.body))
+        console.log('query')
+        console.log('currentID', currentID)
+        const createChat = `INSERT INTO chats (currentID, targetUsername, targetID, roomID) VALUES (${currentID}, '${targetUsername}',${targetID}, ${currentID})`
+       // `INSERT IGNORE INTO ${currentUsername} (id, username, status) VALUES (${targetUserId}, '${username}', 2)`
+        db.query(createChat, function(err, data){
+            console.log('query')
+            if(err){
+                console.log(err)
+                res.send('error querying database')
+            } else{
+                console.log('user called')
+                res.redirect(`/room/${currentID}`)
+            }
+        })
     })
     app.get('/getCurrentUser', function(req,res){
         console.log('getCurrentUser_ID FROM req.session', req.session.user.id)

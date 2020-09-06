@@ -93,3 +93,16 @@ video{
 .videoStop{
     color: red;
 }
+.callButtons:hover{
+    animation-name: callButtonTransition;
+    animation-duration: 300ms;
+    animation-fill-mode: forwards;
+}
+@keyframes callButtonTransition{
+    0% {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    100% {
+        background-color:rgba(40, 10, 10, 0.8);
+    }
+}

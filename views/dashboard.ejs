@@ -12,10 +12,12 @@
     data-auto-a11y="true"
     data-search-pseudo-elements
   ></script>
+  <script defer src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+  <script crossorigin="anonymous" defer src="/socket.io/socket.io.js"></script>
   <script>
     const SEARCH_RESULTS = "<%= searchResults %>"
   </script>
-    <script src="/script"></script>
+    <script defer src="/dashboard.js"></script>
 </head>
 <body style="min-height: 100%;">
     <div class="dashboard">
@@ -257,9 +259,10 @@ xhttp.onreadystatechange = function() {
      xhr.onreadystatechange = function() {
        document.body.setAttribute('id', `${xhr.response}`)
      }*/
+     //addeventlisterner onclick main document.children[0].textContent. Nonasync request in funciton sending you to app.post(room) and pass it the id (not username).
      function renderFriendToDashboard(index, username){
       let newResult = ` 
-          <div id="${index}" class="dashboard__searchResult" style="margin-bottom: 10px; box-shadow: 0px 0px 1px 2px darkgrey; border-radius: 5px; margin-left: 20px; margin-right: 20px; padding-left: 30px; justify-content: space-between; min-width: 100px; display: flex; border: 1px solid darkgrey; color: #605f62; letter-spacing: 0.13rem; background: lightgrey;">
+          <div id="${index}" class="dashboard__searchResult friend" style="margin-bottom: 10px; box-shadow: 0px 0px 1px 2px darkgrey; border-radius: 5px; margin-left: 20px; margin-right: 20px; padding-left: 30px; justify-content: space-between; min-width: 100px; display: flex; border: 1px solid darkgrey; color: #605f62; letter-spacing: 0.13rem; background: lightgrey;">
             <p style="font-weight: 900; text-shadow: 0px 0px 0px 1px #4d4c4e; font-weight: 22px;" class="${index}">${username}</p>
             <a class="dashboard__contact" style="padding-bottom: 5px; align-items: center; background: white; color: darkgrey; min-width: 30px; display: flex; flex-direction: column-reverse;">Contact<i class="fas fa-camera" style="padding-bottom: 2px;"></i></a>
           </div>
@@ -295,8 +298,41 @@ xhttp.onreadystatechange = function() {
           }
           searchResultList = [...document.querySelectorAll('.dashboard__searchResult')]
       //const searchResultListUserName = [...document.querySelectorAll('.search__result')]
-        }
+        } 
         renderElements()
+        const friendsList = document.querySelectorAll('.friend');
+        const friendsArray = [...friendsList];
+        let xhttpRequests = [];
+        for(let i = 0; i<friendsArray.length; i++){
+            friendsList[i].addEventListener('click', function(e){
+              const targetID = e.currentTarget.getAttribute('id');
+              const targetUsername = e.currentTarget.children[0].textContent;
+              console.log('targetID', targetID);
+              console.log('targetUsername', targetUsername);
+              console.log('bodyID', document.body.id)
+              if(document.body.id){
+              fetch('/calluser',{
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                redirect: 'follow',
+                body: `targetUsername=${targetUsername}&targetID=${targetID}&currentID=${document.body.id}`
+              }).then(response=>{
+                if (response.redirected) {
+                window.location.href = response.url;
+        }
+              })
+            }
+              /*xhttpRequests[i] = new XMLHttpRequest();
+              xhttpRequests[i].open("post", "/calluser");
+              console.log(xhttpRequests)
+              xhttpRequests[i].setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+              xhttpRequests[i].send(`targetUsername=${targetUsername}&targetID=${targetID}&currentID=${document.body.id}`);*/
+            })
+        }
         }
       }
      }
@@ -334,5 +370,7 @@ xhttp.onreadystatechange = function() {
 //current.removeEventListener('click', handleUserAdd)
 }
     </script>
+     <script defer src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+     <script crossorigin="anonymous" defer src="/socket.io/socket.io.js"></script>
 </body>
 </html>

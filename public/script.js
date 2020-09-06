@@ -1,6 +1,17 @@
 //import { text } from "express";
 
 //import { PeerServer } from "peer";
+//peer.connect connects to the remote server and returns a data connection
+//peer.on('open') emitted when a connection to the peer server is established
+//peer.on('connect') emitted when a data connection is established from the remote server
+
+
+//pass my id from document.body into the peer constructor
+//send on the dataconnection from the receiver a call
+//the data.on('connection') listens for this and then sends the information back
+// in the data.connection there is a conditional which says if the message 
+
+
 
 //front-end javascript
 //const socket = io() - works for chrome only
@@ -18,10 +29,8 @@ const clientVideo = document.createElement('video');
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '443'
+    port: '3030'
 });
-
-
 let myVideoStream;
 const myVideo = document.createElement('video')
 myVideo.muted = true;
@@ -34,21 +43,49 @@ navigator.mediaDevices.getUserMedia({
     audio: true
 }).then(stream =>{
     myVideoStream = stream;
+    //add my stream to the video and the stream created by navigator gets passed
+    //as the src object to a new video element which is created.
     addVideoStream(myVideo, stream)
-    
+    //myPeer.call- starts a call
+    //myPeer.on('call', call=>{})- answers call
+    //below when recipient user is called they answer it and there own personal stream gets passed into the call.answer function
+    //then when the stream is created the call.on('stream') function is called an a new video element is created of the sending user.
+    console.log('streamobject - .then before myPeeron.on(call', stream)
 myPeer.on('call', call => {
+    //path conditional for dashboard 
+    let streamid = stream.id;
+    console.log('this is the stream id', streamid)
+    console.log('call object - in myPeer.on(call)', call)
+    document.querySelector('.callNotificationWrapper').style.display = 'flex';
+    document.querySelector('.callButtonAnswer').addEventListener('click', function(e){
+        console.log('callbutton clicked')
     call.answer(stream)
     const video = document.createElement('video')
     call.on('stream', userVideoStream => {
         addVideoStream(video, userVideoStream)
     })
+    document.querySelector('.callNotificationWrapper').style.display = 'none'
+})
+    document.querySelector('.callButtonReject').addEventListener('click' ,function(){
+       call.close();
+       console.log('call rejected');
+       document.querySelector('.callNotificationWrapper').style.display = 'none';
+       document.querySelector('.callRejectionWrapper').style.display = 'flex';
+       setTimeout(function(){
+        document.querySelector('.callRejectionWrapper').style.display = 'none';
+       }, 2000)
+})
 })
 
+//'user-connected' is the event fired when.....  and passess in current user stream and userID
 socket.on('user-connected', userID=>{
+    console.log('peers', peers)
+    console.log(userID, console.log(userID))
     connectToNewUser(userID, stream);
 })
 //paste here
 })
+//'user-disconnected' is the event fired when.....
 socket.on('user-disconnected', userID => {
     if (peers[userID]) peers[userID].close()
 })
