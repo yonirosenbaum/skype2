@@ -33,7 +33,7 @@ if (xhttp.readyState === 4 && xhttp.response == 'user_added') {
    const myPeer = new Peer(undefined, {
      path: '/peerjs',
      host: '/',
-     port: '3030',
+     port: '443',
      /*config: {
       'iceServers': [{
               url: 'stun:stun1.l.google.com:19302'
@@ -109,7 +109,7 @@ myPeer.on('connection', function(conn){
  console.log('connection- conn object', conn)
  conn.on('data', console.log('data is in conn.on(data)', data))
 })
-
+console.log(conn)
 /*
 //receive connection- provides a data connection object
 myPeer.on('connection', function(conn){
