@@ -33,7 +33,7 @@ if (xhttp.readyState === 4 && xhttp.response == 'user_added') {
    const myPeer = new Peer(undefined, {
      path: '/peerjs',
      host: '/',
-     port: '443',
+     port: '3030',
      /*config: {
       'iceServers': [{
               url: 'stun:stun1.l.google.com:19302'
@@ -71,21 +71,28 @@ if (xhttp.readyState === 4 && xhttp.response == 'user_added') {
  //add peers array???
 myPeer.on('open', function(){
  socket.emit('callUser')
+ //document.body.id takes a while I need to have these scripts run after
  const currentID = document.body.id
  //myPeer.connect('callUser')
  console.log('users ID', currentID)
 })
 const conn = myPeer.connect('callUser')
 
+myPeer.on('error', function(err){
+  console.log('error:', err)
+})
 //myPeer.on('connection', function(){
   //when socket and peer is opened this is emitted
 socket.on('establishConnection', function(){
    console.log('establishConnection')
    console.log('conn', conn)
-   myPeer.connect('callUser')
+  // myPeer.connect('callUser')
    conn.on('open', function(){
    //receive messages
    console.log('connection opened')
+   conn.on('error', function(err){
+     console.log('error:', err)
+   })
    conn.on('data', function(data){
      alert('data')
      console.log('Received', data)
@@ -98,6 +105,7 @@ socket.on('establishConnection', function(){
 //if the message received is the users id then send back 'answer' or 'reject'
 //then send this and also need to set up a listener for this to resolve this
 myPeer.on('connection', function(conn){
+  data.open = true;
  console.log('connection- conn object', conn)
  conn.on('data', console.log('data is in conn.on(data)', data))
 })
