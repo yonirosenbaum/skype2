@@ -12,18 +12,19 @@
     data-auto-a11y="true"
     data-search-pseudo-elements
   ></script>
-  <script defer src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
-  <script crossorigin="anonymous" defer src="/socket.io/socket.io.js"></script>
+  <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+  <script crossorigin="anonymous" src="/socket.io/socket.io.js"></script>
   <script defer id="dashboard_script" data-src="/dashboard"></script>
   <script>
     const SEARCH_RESULTS = "<%= searchResults %>"
   </script>
 </head>
-<body style="min-height: 100%;">
+<body style="min-height: 100%; position: relative;">
     <div class="dashboard">
         <div class="dashboard__header">
-            <a style="color: white; text-decoration: none;" href="/dashboard"><h4>Your Chats</h4></a>
-            <a href="/requests" style="text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
+            <a class="yourChatsWrapper" style="color: white; text-decoration: none;" href="/dashboard"><h4 style="text-transform: capitalize;" id="yourChats"></h4></a>
+            <a href="/requests" class="friendRequests" style="text-decoration: none; font-size: 16px; padding-left: 40px; padding-right: 40px; color: white;">Friend Requests</a>
+            <div class="dashboard__searchFormWrapper">
             <div style="position: relative; display: flex; flex-direction: column;">
             <form class="dashboard__searchForm" action="/search" method="POST">
               <input name="searchInput" class="dashboard__searchInput" type="text" placeholder="Search for a user"/>
@@ -31,14 +32,28 @@
                  <a><i class="dashboard__searchIcon fa fa-search"></i></a>
               </div>
            </form>
+          </div>
            <div style="display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
            </div>
         </div>
-           <a class="dashboard__logout">Log Out</a>
+           <a href="/logout" style="text-decoration: none;" class="dashboard__logout">Log Out</a>
         </div>
         <div style="mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(173, 160, 154, 0.1))">
-        <div style="padding-top: 10px; background: black" class="dashboard__chats">
+        <div style="padding-top: 10px; background: lightsteelblue" class="dashboard__chats">
         </div>
+        </div>
+        <div class="callNotificationWrapper" style="z-index: 9999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
+          <audio id="phone-call"><source src="/phone.mp3" type="audio/mpeg"></audio>
+          <div style="display: flex;">
+            <div class="callUsername"></div class="callUsername">
+          <div class="callButtons callButtonAnswer" style="border-radius: 6px; background: rgba(0, 0, 0, 0.5); width: 100px; text-align: center; height: 100px; padding: 10px; margin-right: 60px; cursor:pointer; border: 1px solid white;"><i style="box-sizing: content-box; margin: 0 auto; font-size: 32px; color: green; display: block; padding-bottom: 20px;" class="fas fa-phone"></i><div>Answer</div></div>
+          <div class="callButtons callButtonReject" style="border-radius: 6px; background: rgba(0, 0, 0, 0.5); width: 100px; text-align: center; height: 100px; padding: 10px; cursor: pointer; border: 1px solid white;"><i style="box-sizing: content-box; margin: 0 auto; font-size: 32px; color: red; display: block; padding-bottom: 20px;" class="fas fa-phone-slash"></i><div>Reject</div></div>
+         </div>
+        </div>
+        <div class="callRejectionWrapper" style="align-items: center; justify-content: center; z-index: 9999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
+          <div style="bottom: 0px; left: 0px; right: 0px;">
+            <div style="width: 100%; padding: 20px; box-sizing: content-box; border: 2px solid white; font-size: 900; font-size: 32px;">Call rejected</div>
+          </div>
         </div>
     </div>
     <script>
@@ -46,6 +61,20 @@
       //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
       const xhr = new XMLHttpRequest();
       const newIconForAdded = document.createElement('i')
+
+      function handleCallSound(){
+        if(document.querySelector('.callNotificationWrapper').style.display == 'flex'){
+        document.querySelector('#phone-call').setAttribute('autoplay', 'true')
+        document.querySelector('#phone-call').setAttribute('loop', 'true')
+        console.log('phone callllledd')
+        document.querySelector('audio').play();
+    } else{
+      document.querySelector('#phone-call').removeAttribute('autoplay')
+        document.querySelector('#phone-call').removeAttribute('loop')
+        console.log('no phone callled')
+    }
+  }
+
       function handleSearchClickIfUserNotAdded(){
 console.log('script deferred')
 const selectAllSearches = document.querySelectorAll('.addClickEvent')
@@ -82,14 +111,28 @@ if(!e.currentTarget.classList.contains('status4') && !e.currentTarget.classList.
      xhr.onreadystatechange = function() {
        document.body.setAttribute('id', `${xhr.response}`)
        if(xhr.readyState === 4){
-       console.log('getcurrentuser', xhr.response)
        document.body.setAttribute('id', `${xhr.response}`)
        document.body.id = `${xhr.response}`
-       console.log('xhr response', xhr.response)
        let bodyId = xhr.response
        //checkUserFriendshipStatus(bodyId)
-     
-     }
+       if(document.body.id){
+       const xhrusername = new XMLHttpRequest();
+       xhrusername.open("post", "/getCurrentUsername", true);
+       xhrusername.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+       xhrusername.send(`id=${bodyId}`);
+       xhrusername.onreadystatechange = function() {
+        if(xhr.readyState === 4){
+          const username = xhrusername.response;
+          document.querySelector('#yourChats').textContent = `${username}'s Chats`;
+        }
+      }
+       } else{
+        document.querySelector('#yourChats').textcontent = 'Your Chats'
+       }
+     } 
+    }
+    if(document.querySelector('#yourChats').textcontent = ''){
+      document.querySelector('#yourChats').textcontent = 'Your Chats'
     }
       console.log(SEARCH_RESULTS);
       //returns myuser,myuser,myuser,myuser
@@ -262,7 +305,7 @@ xhttp.onreadystatechange = function() {
      //addeventlisterner onclick main document.children[0].textContent. Nonasync request in funciton sending you to app.post(room) and pass it the id (not username).
      function renderFriendToDashboard(index, username){
       let newResult = ` 
-          <div id="${index}" class="dashboard__searchResult friend" style="margin-bottom: 10px; box-shadow: 0px 0px 1px 2px darkgrey; border-radius: 5px; margin-left: 20px; margin-right: 20px; padding-left: 30px; justify-content: space-between; min-width: 100px; display: flex; border: 1px solid darkgrey; color: #605f62; letter-spacing: 0.13rem; background: lightgrey;">
+          <div id="${index}" class="dashboard__searchResult friend" style="margin-bottom: 10px; box-shadow: 0px 0px 1px 1px white; border-radius: 5px; margin-left: 20px; margin-right: 20px; padding-left: 30px; justify-content: space-between; min-width: 100px; display: flex; border: 1px solid darkgrey; color: #605f62; letter-spacing: 0.13rem; background: lightgrey;">
             <p style="font-weight: 900; text-shadow: 0px 0px 0px 1px #4d4c4e; font-weight: 22px;" class="${index}">${username}</p>
             <a class="dashboard__contact" style="padding-bottom: 5px; align-items: center; background: white; color: darkgrey; min-width: 30px; display: flex; flex-direction: column-reverse;">Contact<i class="fas fa-camera" style="padding-bottom: 2px;"></i></a>
           </div>
@@ -322,7 +365,8 @@ xhttp.onreadystatechange = function() {
                 body: `targetUsername=${targetUsername}&targetID=${targetID}&currentID=${document.body.id}`
               }).then(response=>{
                 if (response.redirected) {
-                window.location.href = response.url;
+                //window.location.href = response.url;
+                return;
         }
               })
             }

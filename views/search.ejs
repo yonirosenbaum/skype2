@@ -19,9 +19,9 @@
 </head>
 <body>
     <div class="dashboard">
-        <div class="dashboard__header" style="width: 100%;">
-          <a style="color: white; padding-right: 40px; text-decoration: none;" href="/dashboard"><h4>Your Chats</h4></a>
-          <a href="/requests" style="text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
+        <div class="dashboard__header" style="width: 100%; background: darkgrey !important;">
+          <a style="color: white; padding-right: 40px; text-decoration: none; flex-grow: 0.3;" href="/dashboard"><h4>Your Chats</h4></a>
+          <a href="/requests" style="flex-grow: 0.3; text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
           <div style="visibility: hidden; position: relative; display: flex; flex-direction: column;">
             <form class="dashboard__searchForm" style="visibility: hidden;" action="/search" method="POST">
               <input name="searchInput" class="dashboard__searchInput" type="text" placeholder="Search for a user"/>
@@ -29,12 +29,12 @@
                  <a><i class="dashboard__searchIcon fa fa-search"></i></a>
               </div>
            </form>
-           <div style="display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
+           <div style="background: lightsteelblue !important; display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
            </div>
         </div>
-         <a class="dashboard__logout" style="float: left;">Log Out</a>
+         <a href="/logout" class="dashboard__logout" style="float: left;">Log Out</a>
         </div>
-        <div style="min-height: 100vh; background: darkgrey; padding-top: 10px; padding-left: 10px; padding-right:10px;" class="search__resultsList">
+        <div style="min-height: 100vh; background: lightsteelblue; padding-top: 10px; padding-left: 10px; padding-right:10px;" class="search__resultsList">
         </div>
         <footer class="search__backButton" style="position: -webkit-sticky; position: sticky; bottom: 0; width: 100%; background: #d22d46; align-items: center; padding-left: 20px; height: 40px; font-weight: 600; min-width: 100px; display: flex; border: 1px solid lightgrey; color: lightgrey;">
           <a href="/dashboard" style="padding-top: 20px; text-decoration: none; color: lightgrey; height: 100%; width: 100%;">
@@ -51,11 +51,11 @@
           const renderResultsAsHtml = results.map(result=>{
             if(results){
           let newResult = ` 
-          <div class="dashboard__searchResult" style="border-radius: 5px; padding-left: 20px; font-weight: 600; justify-content: space-between; min-width: 100px; max-height: 50px; display: flex; box-shadow: 0px 0px 2px 2px darkgrey; color: lightgrey; background: black;">
+          <div class="dashboard__searchResult" style="border-radius: 5px; padding-left: 20px; font-weight: 600; justify-content: space-between; min-width: 100px; max-height: 50px; display: flex; box-shadow: 0px 0px 2px 2px darkgrey; color: lightgrey; background: rgb(70, 69, 69);">
             <p class="search__result">${result}</p>
             <a id="${result}" class="dashboard__search__add" style="color: lightgrey; padding-bottom: 5px; align-items: center; background: rgb(45,160,45); min-width: 30px; display: flex; flex-direction: column-reverse;"><span id="${result}-text">add</span><i id="${result}-icon" class="fas fa-user" style="padding-bottom: 2px;"></i></a>
           </div>
-          <div style="background: darkgrey; height: 10px;"></div>
+          <div style="background: lightsteelblue; height: 10px;"></div>
         `
         document.querySelector('.search__resultsList').innerHTML += newResult
            }})

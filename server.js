@@ -18,6 +18,7 @@ const passport = require('passport');
 const authRoutes = require('./controllers/authentification');
 const Router = require('./router');
 const expressSession = require('express-session');
+const db = require('./database');
 //
 
 
@@ -55,6 +56,8 @@ app.set('view engine', 'ejs');
 //a listener is created for message which allows messages to be emitted.
 //roomID and userID are likely part of the socket object and are passed into the broadcast.emit function
 // this tells the socket who to connect to.
+let recieverIDSERVER = 0;
+let myIDSERVER = 0;
 io.on('connection', socket => {
     socket.on('join-room', (roomID, userID) => {
         console.log('room joined on socket- roomID:', roomID)
@@ -74,11 +77,27 @@ io.on('connection', socket => {
         socket.on('disconnect', () => {
             socket.to(roomID).broadcast.emit('user-disconnected', userID)
           })
+          io.broadcast.emit('getUsername')
     })
-    socket.on('callUser', function(){
+    socket.on('join-dashboard', function(){
+       // await socket.join('dashboard')
+       socket.on("getIDOfReceiver", function(receieverid, myid) {
+        recieverIDSERVER = receieverid;
+        myIDSERVER = myid;
+        console.log('recieverIDSERVER', recieverIDSERVER)     
+        console.log('post receiver', recieverIDSERVER)
+        io.emit('sendCallID', recieverIDSERVER, myIDSERVER)
+      });
+        socket.on('receiveCall', function(callstatus){
+        console.log('call status', callstatus)
+        io.emit('callReturnStatus', callstatus, myIDSERVER, recieverIDSERVER)
+    })
+    })
+    /*socket.on('callUser', function(){
         socket.emit('establishConnection')
-    })
+    })*/
 });
+
 /*
 //LOGIN FORM HANDLING
 // this is actualy the create user form data and not the find user

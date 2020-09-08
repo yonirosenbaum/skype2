@@ -118,15 +118,15 @@
     <div style="min-height: 100%;">
     <div class="dashboard" style="max-height: 150px !important;">
         <div class="dashboard__header">
-          <a style="color: white; text-decoration: none;" href="/dashboard"><h4>Your Chats</h4></a>
-          <a href="/requests" style="text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
-            <div style="position: relative; display: flex; flex-direction: column;">
+          <a style="flex-grow: 0.3; color: white; text-decoration: none;" href="/dashboard"><h4>Your Chats</h4></a>
+          <a href="/requests" style="flex-grow: 0.3; text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
+            <div style="flex-grow: 0.3; position: relative; display: flex; flex-direction: column;">
            <div style="display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
            </div>
         </div>
-           <a class="dashboard__logout">Log Out</a>
+           <a href="/logout" class="dashboard__logout">Log Out</a>
         </div>
-        <div style="z-index: 1; background:black; height: 100%;">
+        <div style="z-index: 1; background:yellow !important; height: 100%;">
             <div style="width: 100%; padding-top: 10px; mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0, 0, 0, 0.7)); background: darkgrey !important; margin-right: 20px; height: 100vh;" class="friendsList">
             </div>
         </div>

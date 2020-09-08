@@ -29,7 +29,7 @@ const clientVideo = document.createElement('video');
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '443'
+    port: '3030'
 });
 let myVideoStream;
 const myVideo = document.createElement('video')
@@ -206,4 +206,3 @@ const toggleChat = () => {
     mr.style.display = 'flex';   
     }
 }
-console.log(conn)

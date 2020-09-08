@@ -5,15 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" href="./dashboard.css"/>
+    <link rel="stylesheet" href="/dashboard.css"/>
     <script>const render_Error_Message = "<%= renderErrorMessage %>"</script>
+    <script
+        src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"
+        data-auto-a11y="true"
+      ></script>
 </head>
-<body style="background: white;">
-    <div class="login">
+<body style="background-attachment: fixed; background: url('/loginBackground.png');">
+    <div style="align-items: center; background: lightsteelblue; opacity: 0.9; padding: 80px; border: 2px solid white; border-radius: 0px 0px 10px 10px; " class="login">
+        <i style="text-align: center; color: white; font-size: 80px;" class="fas fa-headset"></i>
         <div class="login__header">
             <h6>Login With Skype Clone</h6>
             <!--ICON HERE-->
         </div>
+        <div style="display: none; text-align: center; border-radius: 5px; max-width: 315px; font-weight: 700;  color: red; text-shadow: 0px 0px 2px white; padding: 10px; padding-left: 0px; margin-top: 10px;" class="login__error" style="display: none;">Please enter a valid username and password</div>
         <form class="login__form" action="/userlogin" method="POST">
             <label for="usernameInput"></label>
             <input minlength="6" maxlength="20" class="login__username" type="text" name="username" id="usernameInput"/>
@@ -25,7 +31,6 @@
         </form>
         <!--Button will route to another identical 'Signup' page which creates an account and signs them in after-->
         <a class="login__signUpButton" href="/signup">Sign up for an account</a>
-        <div style="display: none; text-align: center; border-radius: 5px; max-width: 315px; font-weight: 700; background: red; color: white; padding: 5px; margin-top: 10px;" class="login__error" style="display: none;">Please enter a valid username and password</div>
     </div>
     <script>
         document.querySelector('.login__button').addEventListener('mouseenter', function(e){

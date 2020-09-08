@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" href="./dashboard.css"/>
+    <link rel="stylesheet" href="/dashboard.css"/>
+    <script>
+    const USER_EXISTS = "<%= userExists %>" 
+    </script>
 </head>
-<body style="background: white;">
+<body style="background: url('loginBackground.png');">
     <div class="login">
         <div class="login__header">
             <h6>Sign Up for skype clone</h6>
             <!--ICON HERE-->
         </div>
-        <form class="signup__form" action="/createuser" method="POST">
+        <form style="display: flex; flex-direction: column;" class="signup__form" action="/createuser" method="POST">
             <label for="usernameInput"></label>
             <input class="signup__username" type="text" minlength="6" maxlength="20" name="username" id="usernameInput"/>
             <label minlength="6" maxlength="20" for="passwordInput"></label>
@@ -23,7 +26,10 @@
             </div>
         </form>
     </div>
-    <div class="signup__warning" style="display: none;">Please enter email and password in lowercase letters.</div>
+    <div class="renderSignUpWarningWrapper">
+    <div class="signup__warning renderSignUpWarning" style="display: none; text-align: center;">Please enter email and password in lowercase letters.</div>
+    <div class="signup__userExists renderSignUpWarning" style="display: none; text-align: center;">User already exists</div>
+    </div>
     <script>
         /*function checkInput(e){
             const lowerCaseTest = RegExp("[a-z]*");
@@ -44,6 +50,24 @@
             document.querySelector('.login__submitButton').disabled = true ;
         }
         }*/
+        if(USER_EXISTS == "User already exists"){
+            document.querySelector('.signup__userExists').style.display = 'block';
+            document.querySelector('.signup__username').addEventListener('focus', function(){
+                document.querySelector('.signup__userExists').style.display = 'none';
+            })
+            document.querySelector('.signup__password').addEventListener('focus', function(){
+                document.querySelector('.signup__userExists').style.display = 'none';
+            })
+        }
+        if(USER_EXISTS == "Enter a username and password"){
+            document.querySelector('.signup__warning').style.display = 'block';
+            document.querySelector('.signup__username').addEventListener('focus', function(){
+                document.querySelector('.signup__warning').style.display = 'none';
+            })
+            document.querySelector('.signup__password').addEventListener('focus', function(){
+                document.querySelector('.signup__warning').style.display = 'none';
+            })
+        }
         function checkInput(e){
             if(document.querySelector('.signup__password').value === document.querySelector('.signup__password').value.toLowerCase()){
                 console.log('1')

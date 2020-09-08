@@ -35,12 +35,17 @@ module.exports = function(app){
         res.render('login', {renderErrorMessage: 'false'})
     })
     app.get('/signup', isUserSignedIn, function(req,res){
-        res.render('signup')
+        res.render('signup', {userExists: 'available'})
     })
     app.post('/room', requireAuth, function(req,res){
         //console.log('hi there')
         const id = req.body.id;
         res.redirect(`/room/${id}`)
+    })
+    app.get('/logout', function(req,res){
+        //req.setHeader('set-cookie', 'mycookie=; max-age=0');
+        req.session.destroy()
+        res.redirect('/dashboard')
     })
     app.get('/room/:room', (req, res)=>{
         res.render('room', { roomID: req.params.room })
@@ -418,8 +423,12 @@ module.exports = function(app){
         })
     })
     app.get('/getCurrentUser', function(req,res){
+        if(req.session.user){
         console.log('getCurrentUser_ID FROM req.session', req.session.user.id)
         res.send(`${req.session.user.id}`)
+        } else {
+            res.send('-1')
+        }
     } )
     app.get('/logout', function(req,res){
         req.session.destroy()
@@ -427,6 +436,17 @@ module.exports = function(app){
     })
     app.get('/', requireAuth, function(req,res,next){
         res.redirect('dashboard')
+    })
+    app.post('/getUsername', function(req,res){
+        const id = req.body.id;
+        const sql = `SELECT * FROM userdata WHERE id = '${id}'`
+        db.query(sql, function(err,data){
+            if(err){
+                console.log(err)
+            } else {
+                res.send(data[0])
+            }
+        })
     })
     //Authenticate user before Authentication.signin route handler
     //this handler gives them a token.
@@ -444,5 +464,15 @@ module.exports = function(app){
             res.redirect('/login')
         }
     })
-    
+    app.post('/getCurrentUsername', function(req,res){
+        const id = req.body.id;
+        const sql = `SELECT * FROM userdata WHERE id = ${id}`
+        db.query(sql, function(err,data){
+            if(err){
+                console.log(err)
+            } else{
+                res.send(data[0].username)
+            }
+        })
+    })
 }

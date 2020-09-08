@@ -46,7 +46,7 @@ exports.signup = async function(req,res,next){
     const username = req.body.username.trim().toLowerCase();
     const password = req.body.password.trim().toLowerCase();
     if(!username || !password){
-        return res.status(422).send({error: 'You must provide email and password.'})
+        res.render('signup', {userExists: "Enter a username and password"})
     }
     else{
       const checkIfUserExists = `SELECT * FROM userdata WHERE username = '${username}'`;
@@ -55,10 +55,10 @@ exports.signup = async function(req,res,next){
           console.log('1- err: user already exists')
           res.render('signup')
         }
-        else if(!data){
+        else if(data[0]){
           //res.send('user exists already')
           console.log('1- no data fonund')
-          res.render('signup')
+          res.render('signup', {userExists: "User already exists"})
         }
         else{
           console.log('1- data found')

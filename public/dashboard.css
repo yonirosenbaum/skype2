@@ -11,6 +11,13 @@ body{
     padding: 5px 20px;
     align-items: center;
     color: white;
+    background: darkgrey;
+}
+.yourChatsWrapper{
+    flex-grow: 0.3;
+}
+.friendRequests{
+    flex-grow: 0.3;
 }
 .dashboard__header h4{
     flex: 1;
@@ -38,6 +45,9 @@ input{
     background: #ff7f00;
     color: white;
     border-radius: 0px 5px 5px 0px;
+}
+.dashboard__searchInput{
+    margin-bottom: 0px;
 }
 .dashboard__searchIcon{
     font-size: 30px;
@@ -136,4 +146,107 @@ input{
     display: flex; 
     flex-direction: column-reverse;
 }
-
+.login{
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: auto auto;
+    padding-top: 50px;
+}
+.login__form{
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+}
+.login__button{
+    display: flex;
+    align-self: start;
+    margin: 0 auto;
+    width: 200px;
+}
+input{
+    margin-bottom: 16px;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+.login__header{
+    font-size: 36px;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0px 0px 4px black;
+}
+.login__password, #usernameInput, .signup__password{
+    background: rgba(54, 54, 54, 0.74);
+    color: white;
+    font-weight: 900;
+    font-size: 18px;
+}
+.login__submitButton{
+    background: darkblue;
+    color: white;
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
+    font-weight: 700;
+    font-size: 18px;
+}
+.login__submitButton:hover{
+    animation-name: submithover;
+    animation-duration: 300ms;
+    animation-fill-mode: forwards;
+}
+@keyframes submithover{
+    100%{
+        opacity: 0.8;
+        border-right: 2px solid white;
+        border-left: 2px solid white;
+        }
+}
+.login__signUpButton{
+    color: whitesmoke;
+    padding-top: 8px;
+    font-weight: 700px;
+    font-size: 18px;
+    padding-bottom: 8px;
+    background: lightsalmon;
+    text-align: center;
+    text-decoration: none;
+    border-bottom: 2px solid salmon;
+    border-top: 2px solid salmon;
+    margin: 0 auto;
+    width: 200px;
+}
+.login__signUpButton:hover{
+    animation-name: signuphover;
+    animation-duration: 300ms;
+    animation-fill-mode: forwards;
+}
+@keyframes signuphover{
+    100%{
+    opacity: 0.8;
+    border-right: 2px solid salmon;
+    border-left: 2px solid salmon;
+    }
+}
+.renderSignUpWarning{
+    color: red;
+    font-weight: 700;
+    border-top: 2px solid red;
+    border-bottom: 2px solid red;
+    width: 400px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+.renderSignUpWarningWrapper{
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+.dashboard__logout{
+    text-decoration: none;
+}
+.dashboard__searchFormWrapper{
+    flex-grow: 0.3;
+}
+.dashboard__searchForm{
+    width: 100%;
+}

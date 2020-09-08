@@ -54,8 +54,10 @@
             </div>
           </div>
           <div class="main__controls__block">
-            <div class="main__controls__button">
+            <div class="main__controls__button" style="position: relative;">
+              <a href="/dashboard" style="text-decoration: none; position: absolute; top: 0; left: 0; bottom: 0; right: 0; text-align: center; text-justify: center;">
               <span class="leave__meeting">Leave Meeting</span>
+              </a>
             </div>
           </div>
         </div>
@@ -72,19 +74,20 @@
         </div>
       </div >
     </div>
-    <div class="callNotificationWrapper" style="z-index: 999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
+    <div class="callNotificationWrapper" style="z-index: 9999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
       <div style="display: flex;">
       <div class="callButtons callButtonAnswer" style="border-radius: 6px; background: rgba(0, 0, 0, 0.5); width: 100px; text-align: center; height: 100px; padding: 10px; margin-right: 60px; cursor:pointer; border: 1px solid white;"><i style="box-sizing: content-box; margin: 0 auto; font-size: 32px; color: green; display: block; padding-bottom: 20px;" class="fas fa-phone"></i><div>Answer</div></div>
       <div class="callButtons callButtonReject" style="border-radius: 6px; background: rgba(0, 0, 0, 0.5); width: 100px; text-align: center; height: 100px; padding: 10px; cursor: pointer; border: 1px solid white;"><i style="box-sizing: content-box; margin: 0 auto; font-size: 32px; color: red; display: block; padding-bottom: 20px;" class="fas fa-phone-slash"></i><div>Reject</div></div>
      </div>
     </div>
-    <div class="callRejectionWrapper" style="align-items: center; justify-content: center; z-index: 999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
-      <div>
-        <div style=" padding: 20px; border: 2px solid white; font-size: 900; font-size: 32px;">Call rejected</div>
+    <div class="callRejectionWrapper" style="align-items: center; justify-content: center; z-index: 9999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
+      <div style="bottom: 0px; left: 0px; right: 0px;">
+        <div style="width: 100%; padding: 20px; box-sizing: content-box; border: 2px solid white; font-size: 900; font-size: 32px;">Call rejected</div>
       </div>
     </div>
 </body>
 <script>
+    let myuser = ''
     //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
     const xhr = new XMLHttpRequest();
       xhr.open("get", "/getCurrentUser", true);
@@ -95,6 +98,27 @@
         console.log('this is the xhr response', xhr.response)
        document.body.setAttribute('id', `${xhr.response}`)
        //in here you pass the id
+       if(xhr.response !== '-1'){
+         console.log(xhr.response)
+       const xhr2 = new XMLHttpRequest();
+       xhr2.open("post", "/getUsername", true);
+       xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+       xhr2.send(`id=${xhr.response}`);
+       xhr2.onreadystatechange = function(){
+         if(xhr2.readyState === 4){
+           myuser = xh2.response;
+           if(bodyId){xhrusername.send(`id=${myuser}`);
+       xhrusername.onreadystatechange = function(){
+         if(xhrusername.readyState === 4){
+           let username = xhrusername.response;
+           console.log('response username is',username);
+           document.querySelector('.main').setAttribute('id', `${username}`)          
+         }
+       }
+      }
+         }
+       }
+       }
       }
      }
 </script>
