@@ -54,6 +54,7 @@ module.exports = function(app){
         res.render('dashboard', {searchResults: ''})
     })
     app.get('/friendsList', function(req,res){
+        if(req.session){
         const id = req.session.user.id;
         const getUsername = `SELECT * FROM userdata where id = '${id}'`;
         db.query(getUsername, function(err,data){
@@ -83,6 +84,7 @@ module.exports = function(app){
             })
         }
         })
+    }
     })
     app.post('/getusers', function(req,res){
         const idArray = req.body.id.split(',')
@@ -465,6 +467,7 @@ module.exports = function(app){
         }
     })
     app.post('/getCurrentUsername', function(req,res){
+        if(req.body.id !== undefined){
         const id = req.body.id;
         const sql = `SELECT * FROM userdata WHERE id = ${id}`
         db.query(sql, function(err,data){
@@ -474,5 +477,6 @@ module.exports = function(app){
                 res.send(data[0].username)
             }
         })
+    }
     })
 }

@@ -49,61 +49,66 @@ exports.signup = async function(req,res,next){
         res.render('signup', {userExists: "Enter a username and password"})
     }
     else{
+      console.log('precheckifUserExists', username)
       const checkIfUserExists = `SELECT * FROM userdata WHERE username = '${username}'`;
       await db.query(checkIfUserExists, async function(err,data){
         if(err){
-          console.log('1- err: user already exists')
+          console.log('err')
           res.render('signup')
         }
         else if(data[0]){
           //res.send('user exists already')
-          console.log('1- no data fonund')
+          console.log('else if(data[0])')
           res.render('signup', {userExists: "User already exists"})
         }
         else{
-          console.log('1- data found')
+          console.log('else')
       const sql = ` INSERT IGNORE INTO userdata (username, password) VALUES
           ('${username}', '${password}')
       `
-      let initialSQL = ''
-      await db.query(sql, function(err, data){
+      console.log('username', username)
+      console.log('password', password)
+      console.log('sql', sql)
+      let initialSQL = '';
+      await db.query(sql, async function(err, data){
         if(err){
           console.log(err)
         } else{
           //console.log('1 record inserted')
           initialSQl = 'pass'
           console.log('1 record inserted into userdata')
-        }
-      })
-      
     
-      let userId = '';
+      let userId;
+      console.log('username', username)
       const getId = `SELECT * from userdata WHERE username = '${username}'`
       await db.query(getId, function(err, data){
         if(err){
           console.log(err)
         } else{
+          console.log(data[0].id)
           userId = data[0].id;
           req.session.user = 
           {id: userId}
           //console.log('id', userId)
          // console.log('data', data.insertId)
+         const createTable = `CREATE TABLE ${username}(
+          id int PRIMARY KEY,
+          username VARCHAR(20),
+          status int
+        )`
+        db.query(createTable, function(err, data){
+          if(err){
+            console.log(err)
+          } else{
+            //console.log('table created')
+            //console.log(data)
+            res.redirect('/dashboard')
+          }
+        })
         }
       })
-      const createTable = `CREATE TABLE ${username}(
-        id int PRIMARY KEY,
-        username VARCHAR(20),
-        status int
-      )`
-      db.query(createTable, function(err, data){
-        if(err){
-          console.log(err)
-        } else{
-          //console.log('table created')
-          //console.log(data)
-          res.redirect('/dashboard')
-        }
-      })
+    }
+  })
     }
   })
     }}
