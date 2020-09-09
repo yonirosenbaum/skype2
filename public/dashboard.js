@@ -29,7 +29,6 @@ if (xhttp.readyState === 4 && xhttp.response == 'user_added') {
    const socket = io('/');
    console.log('dashboard')
    socket.emit('join-dashboard')
-   let friendsList;
    const friendsOnClick = document.querySelectorAll('.dashboard__searchResult')
    const friendsOnClickArray = [...friendsOnClick];
    for (let i =0; i<friendsOnClickArray.length; i++){

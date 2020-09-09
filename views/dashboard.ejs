@@ -66,7 +66,7 @@
       //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
       const xhr = new XMLHttpRequest();
       const newIconForAdded = document.createElement('i')
-      let friendsList;
+      let friendsList = [];
       function handleCallSound(){
         if(document.querySelector('.callNotificationWrapper').style.display == 'flex'){
         document.querySelector('#phone-call').setAttribute('autoplay', 'true');
@@ -343,7 +343,7 @@ xhttp.onreadystatechange = function() {
           const friendsUsernames = JSON.parse(xhttp3.response)
           console.log(friendsUsernames)
           console.log(friendsIds)
-          friendsList = friendsUsernames;
+          friendsList.push(friendsUsernames);
           async function renderElements(){
           for(let i =0; i<friendsIds.length;i++){
             await renderFriendToDashboard(friendsIds[i], friendsUsernames[i])
@@ -353,11 +353,11 @@ xhttp.onreadystatechange = function() {
       //const searchResultListUserName = [...document.querySelectorAll('.search__result')]
         } 
         renderElements()
-        const friendsList = document.querySelectorAll('.friend');
+        const friendsListElement = document.querySelectorAll('.friend');
         const friendsArray = [...friendsList];
         let xhttpRequests = [];
         for(let i = 0; i<friendsArray.length; i++){
-            friendsList[i].addEventListener('click', function(e){
+            friendsListElement[i].addEventListener('click', function(e){
               const targetID = e.currentTarget.getAttribute('id');
               const targetUsername = e.currentTarget.children[0].textContent;
               document.querySelector('.sendingCall').style.display = 'flex';
