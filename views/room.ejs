@@ -27,9 +27,9 @@
       <div class="main__left">
         <div class="main__videos">
           <div id="video__grid">
-
           </div>
         </div>
+        <p class="videoWarning" style="justify-content:end; text-align: center; margin-bottom: 0; padding-bottom: 10px; font-size: 1.2rem; background: black; color: white;">If streaming fails try reloading the page, the server may be overloaded...</p>
         <div class="main__controls">
           <div class="main__controls__block">
             <div onclick="toggleMute()" class="main__controls__button main__mute__button">
@@ -83,6 +83,9 @@
     </div>
 </body>
 <script>
+    setTimeout(function(){
+      document.querySelector('.videoWarning').style.display = 'none'
+    }, 4000)
     let myid;
     //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
     const xhr = new XMLHttpRequest();
