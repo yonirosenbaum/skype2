@@ -83,7 +83,7 @@ exports.signup = async function(req,res,next){
         if(err){
           console.log(err)
         } else{
-          userId = data.insertId;
+          userId = data[0].id;
           req.session.user = 
           {id: userId}
           //console.log('id', userId)
