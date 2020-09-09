@@ -66,7 +66,7 @@
       //SET ID OF DOCUMENT.BODY TO USER ID SO IT CAN BE ACCESSED MORE EASILY
       const xhr = new XMLHttpRequest();
       const newIconForAdded = document.createElement('i')
-
+      let friendsList;
       function handleCallSound(){
         if(document.querySelector('.callNotificationWrapper').style.display == 'flex'){
         document.querySelector('#phone-call').setAttribute('autoplay', 'true');
@@ -321,7 +321,6 @@ xhttp.onreadystatechange = function() {
         `
         document.querySelector('.dashboard__chats').innerHTML += newResult
      }
-     let friendsList;
      let searchResultList = [];
      const xhttp2 = new XMLHttpRequest();
       xhttp2.open("get", "/friendsList", true);
