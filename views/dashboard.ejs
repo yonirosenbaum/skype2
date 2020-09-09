@@ -33,19 +33,24 @@
               </div>
            </form>
           </div>
-           <div style="display: none; position: absolute; top: 39px; z-index: 100;" class="dashboard__searchResults">
+           <div style="display: none; position: absolute; top: 60px; z-index: 100;" class="dashboard__searchResults">
            </div>
         </div>
            <a href="/logout" style="text-decoration: none;" class="dashboard__logout">Log Out</a>
         </div>
         <div style="mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(173, 160, 154, 0.1))">
+        <div style="display: flex; background: cornflowerblue; border: 1px solid white; color: white;">
+            <p style="font-weight: 700; font-size: 1.2rem;">Online Users:</p>
+            <ul class="onlineUsers" style="display: flex; list-style: none;"></ul>
+       </div>
         <div style="padding-top: 10px; background: lightsteelblue" class="dashboard__chats">
         </div>
         </div>
-        <div class="callNotificationWrapper" style="z-index: 9999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
+        <div class="sendingCall" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index:998; align-items: center; display: none; justify-content: center; text-align: center; font-size: 40px;">Calling...</div>
+        <div class="callNotificationWrapper" style="flex-direction: column; z-index: 9999; position: absolute; display: none; color: white; justify-content: center; align-items: center; top: 0; left: 0; right: 0; bottom: 0; background:rgba(40, 10, 10, 0.8);">
           <audio id="phone-call"><source src="/phone.mp3" type="audio/mpeg"></audio>
+            <div style="margin-bottom: 40px; font-size: 32px;" class="callUsername"></div>
           <div style="display: flex;">
-            <div class="callUsername"></div class="callUsername">
           <div class="callButtons callButtonAnswer" style="border-radius: 6px; background: rgba(0, 0, 0, 0.5); width: 100px; text-align: center; height: 100px; padding: 10px; margin-right: 60px; cursor:pointer; border: 1px solid white;"><i style="box-sizing: content-box; margin: 0 auto; font-size: 32px; color: green; display: block; padding-bottom: 20px;" class="fas fa-phone"></i><div>Answer</div></div>
           <div class="callButtons callButtonReject" style="border-radius: 6px; background: rgba(0, 0, 0, 0.5); width: 100px; text-align: center; height: 100px; padding: 10px; cursor: pointer; border: 1px solid white;"><i style="box-sizing: content-box; margin: 0 auto; font-size: 32px; color: red; display: block; padding-bottom: 20px;" class="fas fa-phone-slash"></i><div>Reject</div></div>
          </div>
@@ -64,14 +69,17 @@
 
       function handleCallSound(){
         if(document.querySelector('.callNotificationWrapper').style.display == 'flex'){
-        document.querySelector('#phone-call').setAttribute('autoplay', 'true')
-        document.querySelector('#phone-call').setAttribute('loop', 'true')
-        console.log('phone callllledd')
+        document.querySelector('#phone-call').setAttribute('autoplay', 'true');
+        document.querySelector('#phone-call').setAttribute('loop', 'true');
+        console.log('phone callllledd');
+        if(navigator.userAgent.indexOf("Chrome") != -1){
+          document.querySelector('audio').setAttribute('muted', 'true')
+        }
         document.querySelector('audio').play();
     } else{
-      document.querySelector('#phone-call').removeAttribute('autoplay')
-        document.querySelector('#phone-call').removeAttribute('loop')
-        console.log('no phone callled')
+      document.querySelector('#phone-call').removeAttribute('autoplay');
+        document.querySelector('#phone-call').removeAttribute('loop');
+        console.log('no phone callled');
     }
   }
 
@@ -104,7 +112,7 @@ if(!e.currentTarget.classList.contains('status4') && !e.currentTarget.classList.
   newIconForAdded.classList = 'fas fa-address-book';
     }}
   }
-
+let myUsername;
       xhr.open("get", "/getCurrentUser", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
      xhr.send();
@@ -122,6 +130,7 @@ if(!e.currentTarget.classList.contains('status4') && !e.currentTarget.classList.
        xhrusername.send(`id=${bodyId}`);
        xhrusername.onreadystatechange = function() {
         if(xhr.readyState === 4){
+          myUsername = xhrusername.response;
           const username = xhrusername.response;
           document.querySelector('#yourChats').textContent = `${username}'s Chats`;
         }
@@ -312,6 +321,7 @@ xhttp.onreadystatechange = function() {
         `
         document.querySelector('.dashboard__chats').innerHTML += newResult
      }
+     let friendsList;
      let searchResultList = [];
      const xhttp2 = new XMLHttpRequest();
       xhttp2.open("get", "/friendsList", true);
@@ -334,6 +344,7 @@ xhttp.onreadystatechange = function() {
           const friendsUsernames = JSON.parse(xhttp3.response)
           console.log(friendsUsernames)
           console.log(friendsIds)
+          friendsList = friendsUsernames;
           async function renderElements(){
           for(let i =0; i<friendsIds.length;i++){
             await renderFriendToDashboard(friendsIds[i], friendsUsernames[i])
@@ -350,6 +361,10 @@ xhttp.onreadystatechange = function() {
             friendsList[i].addEventListener('click', function(e){
               const targetID = e.currentTarget.getAttribute('id');
               const targetUsername = e.currentTarget.children[0].textContent;
+              document.querySelector('.sendingCall').style.display = 'flex';
+              setTimeout(function(){
+                document.querySelector('.sendingCall').style.display = 'none';
+              }, 1500)
               console.log('targetID', targetID);
               console.log('targetUsername', targetUsername);
               console.log('bodyID', document.body.id)

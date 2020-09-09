@@ -29,8 +29,9 @@ const clientVideo = document.createElement('video');
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '443'
+    port: '3030'
 });
+let myuser = '';
 let myVideoStream;
 const myVideo = document.createElement('video')
 myVideo.muted = true;
@@ -99,7 +100,6 @@ myPeer.on('open', ID => {
 //is created in the server. 
 socket.emit('join-room', ROOM_ID, ID);
 })
-
 //when sockets connects user a video stream is added to a video element
 const connectToNewUser = (userID, stream) => {
     //call another user and send him my stream
@@ -139,8 +139,9 @@ $('html').keydown((e)=>{
         inputText.val('')
     }
 })
-socket.on('createMessage', message => {
-    $('.messages').append(`<li class="message"><b>user</b><br/>${message}</li>`)
+
+socket.on('createMessage', function(message){
+    $('.messages').append(`<li class="message"><br/>${message}</li>`)
     messageScrollToBottom()
 })
 //automatically scrolls messages to bottom when a new message is added.

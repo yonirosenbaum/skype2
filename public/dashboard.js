@@ -38,15 +38,18 @@ if (xhttp.readyState === 4 && xhttp.response == 'user_added') {
   })
 }
 let receivingID = 0000;
-socket.on('sendCallID', function(receiverID, senderID ){
+socket.on('sendCallID', function(receiverID, senderID, receiverUsername ){
   console.log('sendcallID rec', receiverID)
   console.log('sendcallID send', senderID)
+  console.log('receieving username client', receiverUsername)
   if(document.body.id == receiverID){
     receivingID = receiverID
     //open up a display on the user
     console.log('broadcast received')
     //add event listeners here and a receive call based on which is shown. I also need
     document.querySelector('.callNotificationWrapper').style.display = 'flex'
+    console.log(document.querySelector('.callUsername'))
+    document.querySelector('.callUsername').textContent = `Call from ${receiverUsername}`
     handleCallSound()
     //a hidden display for skype
     document.querySelector('.callButtonAnswer').addEventListener('click', async function(e){
@@ -54,17 +57,16 @@ socket.on('sendCallID', function(receiverID, senderID ){
       socket.emit('callReturnStatus');
       //console.log(socket.emit('callReturnStatus'));
       document.querySelector('.callNotificationWrapper').style.display = 'none';
-      handleCallSound()
+      document.querySelector('audio').pause()
     })
     document.querySelector('.callButtonReject').addEventListener('click', async function(e){
       await socket.emit('receiveCall', 'reject');
       document.querySelector('.callNotificationWrapper').style.display = 'none';
-      handleCallSound()
+      document.querySelector('audio').pause()
       document.querySelector('.callRejectionWrapper').style.display = 'flex';
       setTimeout( function(){document.querySelector('.callRejectionWrapper').style.display = 'none'}, 1000);
     })
-    document.querySelector('.callUsername').textContent = ''
-  }
+  } 
 })
 socket.on('callReturnStatus', function(callstatus, myid, receivingid){
   console.log('my id is', myid)
@@ -88,22 +90,37 @@ socket.on('callReturnStatus', function(callstatus, myid, receivingid){
     }
   }
 })
-function getReceiverUsername(){
-  const sql = `SELECT * FROM userdata WHERE id = ${receivingID}`
-  db.query(sql, function(err,data){
-      if(err){
-          console.log(err)
-      } else {
-          console.log('my receiver username', data[0].username)
-          return data[0].username
-      }
-  })
-}
-socket.on('getUsername', function(){
-  console.log('getUSername funciton')
-  return getReceiverUsername()
+if(myUsername){
+socket.emit('getMyUsername', myUsername);
+};
+socket.on('removeUserFromActiveOnDisconnect', function(clients,username){
+  console.log('disconnect event firing')
+  const indexOfCurrentConnection = clients.indexOf(username);
+  console.log('index of current connection', indexOfCurrentConnection)
+  clients.splice(indexOfCurrentConnection, 1);
+  console.log('LIST OF CLIENTS ON DISCONNECT', clients);
 })
-
+let clientList;
+socket.on('clientChange', function(clientArray){
+  clientList = clientArray;
+  if(clientArray.length <= 1){
+    document.querySelector('.onlineUsers').innerHTML = '<li style="align-text: center; font-weight: 700; font-size: 1.5rem;">0</li>'
+  }
+  clientArray.map(client=>{
+   if(client !== myUsername){
+   let htmlItem = `<li style="padding-right: 22px">${client}</li>`
+   document.querySelector('.onlineUsers').innerHTML += `${htmlItem}`
+ }
+})
+})
+if(socket.connected == false){
+  socket.io.connect()
+  console.log('socket reconnected')
+}
+//append clients to the screen like I did with messages
+window.addEventListener('beforeunload', function(){
+  socket.disconnect()
+});
 
 //document.querySelector('.callRejectionWrapper').style.display = 'flex'
    
@@ -231,11 +248,6 @@ myPeer.on('connection', function(conn){
  console.log('connection- conn object', conn)
  conn.on('data', function(data){console.log('data is in conn.on(data)', data)})
 })
-
-window.addEventListener('beforeunload', function(){
-  socket.close();
-  conn.close()
-});
 
 myPeer.on('error', function(err){
   console.log('error:', err)

@@ -11,7 +11,7 @@ body{
     padding: 5px 20px;
     align-items: center;
     color: white;
-    background: darkgrey;
+    background: rgb(70, 69, 69);
 }
 .yourChatsWrapper{
     flex-grow: 0.3;
@@ -249,4 +249,9 @@ input{
 }
 .dashboard__searchForm{
     width: 100%;
+}
+@media only screen and(max-width: 666px){
+.dashboard__searchResults{
+    top: 0px;
+}
 }
