@@ -197,6 +197,7 @@ xhttp.onreadystatechange = function() {
 
         //if friend request send. Set the pending style to the user.
         const bodyId = document.body.getAttribute('id');
+        if(bodyId){
         console.log('bodyId equals', bodyId)
         console.log('checkuserstatusClientSide')
         console.log('checkuserstatusClientSide splitResults', splitResults)
@@ -271,7 +272,7 @@ xhttp.onreadystatechange = function() {
         }
         handleSearchClickIfUserNotAdded()   
         }
-      } 
+      }} 
 }
 })
 
