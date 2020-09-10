@@ -11,13 +11,19 @@ body{
     padding: 5px 20px;
     align-items: center;
     color: white;
-    background: rgb(70, 69, 69);
+    background: rgba(50, 50, 50, 0.7);
 }
 .yourChatsWrapper{
     flex-grow: 0.3;
 }
+.yourChatsWrapper:hover{
+    opacity: 0.7;
+}
 .friendRequests{
     flex-grow: 0.3;
+}
+.friendRequests:hover{
+    opacity: 0.7;
 }
 .dashboard__header h4{
     flex: 1;
@@ -181,12 +187,15 @@ input{
     font-size: 18px;
 }
 .login__submitButton{
-    background: darkblue;
-    color: white;
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
+    background: #9de94c;
+    color: whitesmoke;
+    border-top: 2px solid darkgreen;
+    border-bottom: 2px solid darkgreen;
+    border-right: 0px;
+    border-left: 0px;
     font-weight: 700;
     font-size: 18px;
+    width: 200px;
 }
 .login__submitButton:hover{
     animation-name: submithover;
@@ -196,8 +205,8 @@ input{
 @keyframes submithover{
     100%{
         opacity: 0.8;
-        border-right: 2px solid white;
-        border-left: 2px solid white;
+        border-right: 2px solid darkgreen;
+        border-left: 2px solid darkgreen;
         }
 }
 .login__signUpButton{
@@ -213,8 +222,9 @@ input{
     border-top: 2px solid salmon;
     margin: 0 auto;
     width: 200px;
+    cursor: pointer;
 }
-.login__signUpButton:hover{
+#createUserButton:hover, .login__signUpButton:hover{
     animation-name: signuphover;
     animation-duration: 300ms;
     animation-fill-mode: forwards;
@@ -225,6 +235,23 @@ input{
     border-right: 2px solid salmon;
     border-left: 2px solid salmon;
     }
+}
+#createUserButton{
+    color: whitesmoke;
+    padding-top: 8px;
+    font-weight: 700px;
+    font-size: 18px;
+    padding-bottom: 8px;
+    background: lightsalmon !important;
+    text-align: center;
+    text-decoration: none;
+    border-bottom: 2px solid salmon;
+    border-top: 2px solid salmon;
+    border-right: 0px;
+    border-left: 0px;
+    margin: 0 auto;
+    width: 200px;
+    cursor: pointer;
 }
 .renderSignUpWarning{
     color: red;

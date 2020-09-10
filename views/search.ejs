@@ -19,9 +19,9 @@
 </head>
 <body>
     <div class="dashboard">
-        <div class="dashboard__header" style="width: 100%; background: darkgrey !important;">
-          <a style="color: white; padding-right: 40px; text-decoration: none; flex-grow: 0.3;" href="/dashboard"><h4>Your Chats</h4></a>
-          <a href="/requests" style="flex-grow: 0.3; text-decoration: none; font-size: 16px; padding-right: 40px; color: white;">Friend Requests</a>
+        <div class="dashboard__header" style="width: 100%; background: rgba(50, 50, 50, 0.7) !important;">
+          <a style="color: white; padding-right: 40px; text-decoration: none; flex-grow: 0.3;" class="yourChatsWrapper" href="/dashboard"><h4>Your Chats</h4></a>
+          <a href="/requests" class="friendRequests" style="flex-grow: 0.3; text-decoration: none; font-size: 16px; padding-right: 40px; color: white;"><h4 style="font-weight: 300;">Friend Requests</h4></a>
           <div style="visibility: hidden; position: relative; display: flex; flex-direction: column;">
             <form class="dashboard__searchForm" style="visibility: hidden;" action="/search" method="POST">
               <input name="searchInput" class="dashboard__searchInput" type="text" placeholder="Search for a user"/>
@@ -51,9 +51,9 @@
           const renderResultsAsHtml = results.map(result=>{
             if(results){
           let newResult = ` 
-          <div class="dashboard__searchResult" style="border-radius: 5px; padding-left: 20px; font-weight: 600; justify-content: space-between; min-width: 100px; max-height: 50px; display: flex; box-shadow: 0px 0px 2px 2px darkgrey; color: lightgrey; background: rgb(70, 69, 69);">
-            <p class="search__result">${result}</p>
-            <a id="${result}" class="dashboard__search__add" style="color: lightgrey; padding-bottom: 5px; align-items: center; background: rgb(45,160,45); min-width: 30px; display: flex; flex-direction: column-reverse;"><span id="${result}-text">add</span><i id="${result}-icon" class="fas fa-user" style="padding-bottom: 2px;"></i></a>
+          <div class="dashboard__searchResult" style="border-radius: 5px; padding-left: 20px; font-weight: 600; justify-content: space-between; min-width: 100px; max-height: 50px; display: flex; box-shadow: 0px 0px 2px 2px darkgrey; color: lightgrey; background: rgb(120, 120, 120);">
+            <p class="search__result" style="color: white;">${result}</p>
+            <a id="${result}" class="dashboard__search__add" style="color: white; padding-bottom: 5px; align-items: center; background: rgb(45,160,45); min-width: 30px; display: flex; flex-direction: column-reverse;"><span id="${result}-text">add</span><i id="${result}-icon" class="fas fa-user" style="padding-bottom: 2px;"></i></a>
           </div>
           <div style="background: lightsteelblue; height: 10px;"></div>
         `

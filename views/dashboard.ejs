@@ -23,7 +23,7 @@
     <div class="dashboard">
         <div class="dashboard__header">
             <a class="yourChatsWrapper" style="color: white; text-decoration: none;" href="/dashboard"><h4 style="text-transform: capitalize;" id="yourChats"></h4></a>
-            <a href="/requests" class="friendRequests" style="text-decoration: none; font-size: 16px; padding-left: 40px; padding-right: 40px; color: white;">Friend Requests</a>
+            <a href="/requests" class="friendRequests" style="text-decoration: none; font-size: 16px; padding-left: 40px; padding-right: 40px; color: white;"><h4 style="font-weight: 300;">Friend Requests</h4></a>
             <div class="dashboard__searchFormWrapper">
             <div style="position: relative; display: flex; flex-direction: column;">
             <form class="dashboard__searchForm" action="/search" method="POST">
@@ -40,7 +40,7 @@
         </div>
         <div style="mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(173, 160, 154, 0.1))">
         <div style="display: flex; background: cornflowerblue; border: 1px solid white; color: white;">
-            <p style="font-weight: 700; font-size: 1.2rem;">Online Users:</p>
+            <p style="font-weight: 700; font-size: 1.2rem; margin-left: 48px;">Online Users:</p>
             <ul class="onlineUsers" style="display: flex; list-style: none;"></ul>
        </div>
         <div style="padding-top: 10px; background: lightsteelblue" class="dashboard__chats">
@@ -98,7 +98,7 @@ if(!e.currentTarget.classList.contains('status4') && !e.currentTarget.classList.
     
       //get parent element text without add and set that to username
       // first figure out why styling duplicates icon
-          var xhttp = new XMLHttpRequest();
+  var xhttp = new XMLHttpRequest();
   xhttp.open("POST", "/addfriend", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   console.log('handleSearchClickIfUserNotAdded USER', e.currentTarget.parentElement.children[0].textContent)
@@ -277,7 +277,6 @@ xhttpupdate.onreadystatechange = function() {
     } 
 }
 })
-
       //document.querySelector('.dashboard__searchResults').innerHTML = renderSearchResult();
       
       //document.querySelector('.dashboard__searchResults').innerHTML = renderSearchResult()
@@ -325,17 +324,19 @@ xhttpupdate.onreadystatechange = function() {
         document.querySelector('.dashboard__chats').innerHTML += newResult
      }
      let searchResultList = [];
+     //gets the id of friends
      const xhttp2 = new XMLHttpRequest();
       xhttp2.open("get", "/friendsList", true);
       xhttp2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
      xhttp2.send();
      xhttp2.onreadystatechange = function() {
       if (xhttp2.readyState === 4){
-        if(xhttp2.response == 'no friends found'){
-        console.log(xhttp2.response)
-        console.log(typeof xhttp2.response)
+        console.log('xhttp2.response', xhttp2.response)
+        if(xhttp2.response !== 'no friends found'){
+        console.log('xhttp2.response', xhttp2.response)
+        console.log('typeof xhttp2.response', typeof xhttp2.response)
         const friendsIds = JSON.parse(xhttp2.response)
-
+        //gets the usernames of friends
         const xhttp3 = new XMLHttpRequest()
         xhttp3.open("post", "/getusers", true);
         xhttp3.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -346,8 +347,8 @@ xhttpupdate.onreadystatechange = function() {
         //console.log(responseAsArray)
         if (xhttp3.readyState === 4){
           const friendsUsernames = JSON.parse(xhttp3.response)
-          console.log(friendsUsernames)
-          console.log(friendsIds)
+          console.log('friendsUsernames', friendsUsernames)
+          console.log('friendsIds', friendsIds)
           friendsList.push(friendsUsernames);
           async function renderElements(){
           for(let i =0; i<friendsIds.length;i++){

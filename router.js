@@ -82,6 +82,8 @@ module.exports = function(app){
                         friends.push(data[i].id)
                         user.push(data[i].username)
                     }
+                    console.log('friends', friends)
+                    console.log('user', user)
                     res.send(friends);
                    // res.end()
                 }
