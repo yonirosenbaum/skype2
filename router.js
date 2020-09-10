@@ -61,7 +61,7 @@ module.exports = function(app){
             if(err){
                 res.send('error')
             } 
-            if(!data){
+            if(!data[0]){
                 res.send('no friends found')
             }
             else if (data[0]){
@@ -71,7 +71,11 @@ module.exports = function(app){
                 if(err){
                     console.log(err)
                     res.end()
-                } else {
+                } 
+                if(!data[0]){
+                    res.send('no friends')
+                }
+                else {
                     let friends = []
                     let user = []
                     for(let i=0; i<data.length; i++){

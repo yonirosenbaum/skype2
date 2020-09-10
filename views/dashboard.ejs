@@ -102,6 +102,8 @@ if(!e.currentTarget.classList.contains('status4') && !e.currentTarget.classList.
   xhttp.open("POST", "/addfriend", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xhttp.send(`username=${e.currentTarget.parentElement.children[0].textContent}&id=${document.body.id}`);
+  console.log('id', document.body.id);
+  console.log('username', e.currentTarget.parentElement.children[0].textContent)
   console.log('xhr ready state change')
   //based on what is returned
   console.log('user added client side and response', xhr.response)
@@ -206,16 +208,17 @@ xhttp.onreadystatechange = function() {
       xhrTwo.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       xhrTwo.send(`id=${bodyId}&searchResults=${splitResults}`);
 
+      //everything seems fine up to here....
     xhrTwo.onreadystatechange = function(){
         if(xhrTwo.readyState === 4){
           const responseAsObject = JSON.parse(xhrTwo.response)
           console.log(responseAsObject)
           for(let i =0; i < responseAsObject.length; i++){
-            console.log(responseAsObject)
+            console.log('responseasbobject', responseAsObject)
             console.log(typeof responseAsObject)
-            console.log(responseAsObject[i].username)
-            console.log(responseAsObject[i].id)
-            console.log(responseAsObject[i].status)
+            console.log('responseasbobject username',responseAsObject[i].username)
+            console.log('responseasbobject id', responseAsObject[i].id)
+            console.log('responseasbobject status', responseAsObject[i].status)
 
           if(responseAsObject[i].status == 4){
             console.log('4')
@@ -329,6 +332,7 @@ xhttp.onreadystatechange = function() {
      xhttp2.send();
      xhttp2.onreadystatechange = function() {
       if (xhttp2.readyState === 4){
+        if(xhttp2.response == 'no friends found'){
         console.log(xhttp2.response)
         console.log(typeof xhttp2.response)
         const friendsIds = JSON.parse(xhttp2.response)
@@ -336,6 +340,7 @@ xhttp.onreadystatechange = function() {
         const xhttp3 = new XMLHttpRequest()
         xhttp3.open("post", "/getusers", true);
         xhttp3.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        console.log('friendsIds', friendsIds)
         xhttp3.send(`id=${friendsIds}`);
         xhttp3.onreadystatechange = function() {
        // const responseAsArray = [...splitResponse]
@@ -397,6 +402,11 @@ xhttp.onreadystatechange = function() {
         script.removeAttribute("data-src");
         }
       }
+    } else {
+      const script = document.getElementById('dashboard_script');
+        script.setAttribute("src", "/dashboard.js");
+        script.removeAttribute("data-src");
+    }
      }
     }
     function handleUserAdd(e, i){
