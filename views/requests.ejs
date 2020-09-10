@@ -32,10 +32,13 @@
           if(xhttp.response){
           console.log(xhttp.response)
           //const responseAsObject = JSON.parse(xhttp.response)
-          console.log(responseAsObject)
           responseAsObject = JSON.parse(xhttp.response)
+          console.log(responseAsObject)
           //let responseArray = []
           for(let i =0; i < responseAsObject.length; i++){
+            console.log('response username', responseAsObject[i].username)
+            console.log('response id', responseAsObject[i].id)
+            console.log('response status', responseAsObject[i].status)
             //responseArray.push({id: responseAsObject[i].id, username: responseAsObject[i].username})
             /*console.log(responseAsObject)
             console.log(typeof responseAsObject)

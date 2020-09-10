@@ -101,10 +101,9 @@ if(!e.currentTarget.classList.contains('status4') && !e.currentTarget.classList.
           var xhttp = new XMLHttpRequest();
   xhttp.open("POST", "/addfriend", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  console.log('handleSearchClickIfUserNotAdded USER', e.currentTarget.parentElement.children[0].textContent)
+  console.log('handleSearchClickIfUserNotAdded USER',document.body.id)
   xhttp.send(`username=${e.currentTarget.parentElement.children[0].textContent}&id=${document.body.id}`);
-  console.log('id', document.body.id);
-  console.log('username', e.currentTarget.parentElement.children[0].textContent)
-  console.log('xhr ready state change')
   //based on what is returned
   console.log('user added client side and response', xhr.response)
   console.log('ect', e.currentTarget)
@@ -171,23 +170,23 @@ let myUsername;
   all data is displayed in the app ina search content page
 */
 document.querySelector('.dashboard__searchInput').addEventListener('keyup', function(e){
-var xhttp = new XMLHttpRequest();
-xhttp.open("POST", "/searchUpdate", true);
-xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-xhttp.send(`searchInput=${e.currentTarget.value}`);
+var xhttpupdate = new XMLHttpRequest();
+xhttpupdate.open("POST", "/searchUpdate", true);
+xhttpupdate.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhttpupdate.send(`searchInput=${e.currentTarget.value}`);
 console.log('request sent')
-xhttp.onreadystatechange = function() {
+xhttpupdate.onreadystatechange = function() {
   console.log('xhr ready state change')
-    if (xhttp.readyState === 4 && xhttp.response.length) {
-      console.log('response', xhttp.response);
-      const responseAsArray = xhttp.response.split(',');
+    if (xhttpupdate.readyState === 4 && xhttpupdate.response.length){
+      console.log('response', xhttpupdate.response);
+      const responseAsArray = xhttpupdate.response.split(',');
       splitResults = responseAsArray;
       console.log('response', typeof responseAsArray);
-      if(!xhttp.response.message){
+      if(!xhttpupdate.response.message){
       renderSearchResult(responseAsArray)
       }
-      else if(xhttp.response.message){
-        console.log(xhttp.response.message)
+      if(xhttpupdate.response.message){
+        console.log(xhttpupdate.response.message)
       }
       if(document.querySelector('.dashboard__searchInput').value.length > 0){
         document.querySelector('.dashboard__searchResults').style.display = 'block'
@@ -195,18 +194,17 @@ xhttp.onreadystatechange = function() {
      if(document.querySelector('.dashboard__searchInput').value.length == 0){
        document.querySelector('.dashboard__searchResults').style.display = 'none'
       }
-    }  
-
+    //}  
         //if friend request send. Set the pending style to the user.
-        const bodyId = document.body.getAttribute('id');
-        if(bodyId){
-        console.log('bodyId equals', bodyId)
+        let myBodyId = document.body.getAttribute('id');
+       // if(myBodyId){
+        console.log('bodyId equals', myBodyId)
         console.log('checkuserstatusClientSide')
         console.log('checkuserstatusClientSide splitResults', splitResults)
         const xhrTwo = new XMLHttpRequest();
       xhrTwo.open("post", "/checkuserstatus", true);
       xhrTwo.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhrTwo.send(`id=${bodyId}&searchResults=${splitResults}`);
+      xhrTwo.send(`id=${myBodyId}&searchResults=${splitResults}`);
 
       //everything seems fine up to here....
     xhrTwo.onreadystatechange = function(){
@@ -275,7 +273,8 @@ xhttp.onreadystatechange = function() {
         }
         handleSearchClickIfUserNotAdded()   
         }
-      }} 
+      }
+    } 
 }
 })
 
@@ -422,6 +421,7 @@ xhttp.onreadystatechange = function() {
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "/addfriend", true);
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        console.log('id in handleuseradd', document.body.id)
         xhttp.send(`username=${searchResultList[i].children[0].textContent}&id=${document.body.id}`);
         xhttp.onreadystatechange = function() {
         console.log('xhr ready state change')

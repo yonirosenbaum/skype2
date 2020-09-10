@@ -80,12 +80,12 @@ exports.signup = async function(req,res,next){
     
       let userId;
       console.log('username', username)
-      const getId = `SELECT * from userdata WHERE username = '${username}'`
+      const getId = `SELECT * FROM userdata WHERE username = '${username}'`
       await db.query(getId, function(err, data){
         if(err){
           console.log(err)
         } else{
-          console.log(data[0].id)
+          console.log('data[0].id in table',data[0].id)
           userId = data[0].id;
           req.session.user = 
           {id: userId}
@@ -100,7 +100,7 @@ exports.signup = async function(req,res,next){
           if(err){
             console.log(err)
           } else{
-            //console.log('table created')
+            console.log('table created')
             //console.log(data)
             res.redirect('/dashboard')
           }

@@ -29,7 +29,7 @@ const isUserSignedIn = (req, res, next) => {
 //change so this checks if the user when theyre at login or create user
 // is signed in (if they are go to '/') and if not call next() to continue to
 // the login or signup page.
-
+let currentUsername = '';
 module.exports = function(app){
     app.get('/login', isUserSignedIn, function(req,res){
         res.render('login', {renderErrorMessage: 'false'})
@@ -122,23 +122,23 @@ module.exports = function(app){
                 res.end()
             }
             else{ 
-            let username = data[0].username;
-            console.log('current user', username)
-            const getFriendRequests = `SELECT * FROM ${username} WHERE status = '3'`
-            db.query(getFriendRequests, function(err, data){
+            let myusername = data[0].username;
+            console.log('current user', myusername)
+            const getFriendRequests = `SELECT * FROM ${myusername} WHERE status = '3'`
+            db.query(getFriendRequests, function(err, nesteddata){
                 if(err){
                     console.log(err)
                     res.send('[]')
                 }
-                if(!data[0]){
+                if(!nesteddata[0]){
                     console.log('no friend requests')
                     res.send('')
                 }
-                else if(data){
-                    console.log('data from friend requests', data)
+                else if(nesteddata){
+                    console.log('data from friend requests', nesteddata)
                     let dataArray = [];
-                    for(let i=0; i<data.length;i++){
-                        dataArray.push(data[i])
+                    for(let i=0; i<nesteddata.length;i++){
+                        dataArray.push(nesteddata[i])
                     }
                     console.log('dataArray',dataArray)
                     res.send(dataArray)
@@ -270,6 +270,7 @@ module.exports = function(app){
     app.post('/addfriend', async function(req,res){
         //username of user being added
         const username = req.body.username;
+        
         //console.log('username', username)
         //my user id
         const id = Number(req.body.id);
@@ -277,7 +278,6 @@ module.exports = function(app){
         console.log('addfriend id', id )
         //console.log('id', req.body.id)
        // console.log('from addfriend')
-        let currentUsername = '';
         let targetUserId = 0;
         const getCurrentUserInfo = `SELECT * FROM userdata WHERE id = '${id}'`
         await db.query(getCurrentUserInfo, function(err,data){
@@ -292,14 +292,15 @@ module.exports = function(app){
                 currentUsername = data[0].username.toLowerCase();
             }
         })
-        const getTargetUserId = `SELECT id FROM userdata WHERE username = '${username}' LIMIT 1`
-
-        await db.query(getTargetUserId, function(err,data){
+        console.log('username is', username)
+        const getTargetUserId = `SELECT * FROM userdata WHERE username = '${username}'`
+        db.query(getTargetUserId, function(err,data){
             if(err){
                 console.log(err)
             } else{
                 console.log('adding user data object', data)
                 console.log('adding user username', username)
+                console.log('getCurrentUsername inside query', currentUsername)
                 //add pending request to the current user             
                 targetUserId = parseInt(data[0].id);
                 console.log('getTargetUserId SQL', targetUserId)
