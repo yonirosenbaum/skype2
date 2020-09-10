@@ -73,12 +73,12 @@
                 console.log('1')
                 if(document.querySelector('.signup__username').value === document.querySelector('.signup__username').value.toLowerCase()){
                     console.log('2')
-                        document.querySelector('.login__submitButton').removeAttribute('disabled')
+                        document.querySelector('.createUserButton').removeAttribute('disabled')
                 } else{
-                    document.querySelector('.login__submitButton').disabled = true ;
+                    document.querySelector('.createUserButton').disabled = true ;
                 }
             } else{
-                document.querySelector('.login__submitButton').disabled = true ;
+                document.querySelector('.createUserButton').disabled = true ;
             }
         };
         document.querySelector('.signup__password').addEventListener('keydown', e => checkInput(e))
