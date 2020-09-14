@@ -29,7 +29,15 @@ const clientVideo = document.createElement('video');
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '443'
+    port: '443',
+    config: {'iceServers' : { 'urls': 'stun.l.google.com:19302',
+    {
+        'urls': 'turn:relay.backups.cz?transport=tcp',
+        'credential': 'webrtc',
+        'username': 'webrtc'
+    }
+}}
+
 });
 let myuser = '';
 let myVideoStream;
